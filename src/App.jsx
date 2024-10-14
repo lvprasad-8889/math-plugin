@@ -1,37 +1,118 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "katex/dist/katex.min.css";
 import { BlockMath } from "react-katex";
 import "//unpkg.com/mathlive";
 import "./App.css";
+import Modal from "./modal";
+import Katex from "katex";
+import Root from "./assets/root";
 
 function App() {
-  const [latex, setLatex] = useState(""); // State to store LaTeX input
+  const [latex, setLatex] = useState("");
+  const [showMathExpression, setExpression] = useState(false);
 
-  // Handler for input changes in the MathfieldElement
-  const handleInput = (evt) => {
-    setLatex(evt.target.value); // Update LaTeX input as user types
+  const mathFieldRef = useRef(null);
+
+  useEffect(() => {
+    if (mathFieldRef.current) {
+      mathFieldRef.current.focus();
+    }
+  }, []);
+
+  const focusMathField = () => {
+    setTimeout(() => {
+      if (mathFieldRef.current) {
+        mathFieldRef.current.focus();
+      }
+    }, 100);
   };
 
+  const handleInput = (evt) => {
+    setLatex(evt.target.value.trim());
+  };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+    focusMathField();
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const addToTMCE = () => {
+    let iframe = document.getElementById("tinyMceEditor_ifr");
+    let innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+    let p = document.createElement("p");
+    p.textContent = latex;
+    p.className = "math-expression";
+    p.setAttribute("data-katex", latex);
+    innerDoc.body.appendChild(p);
+  };
+
+  const addExpression = () => {
+    if (!latex) {
+      closeModal();
+      return;
+    }
+    try {
+      Katex.renderToString(latex, {
+        throwOnError: true,
+      });
+    } catch (error) {
+      console.log(false);
+      alert("Math expression is invalid, please check once.");
+      return;
+    }
+
+    setExpression(true);
+    closeModal();
+    addToTMCE();
+  };
 
   return (
-    <div className="App">
-      <h2>Math Editor</h2>
-      
-      {/* Mathlive Input Field */}
-      <math-field 
-        onInput={handleInput} 
-        style={{width: "100%"}}
-      >
-        {latex}
-      </math-field>
+    <div className="math-editor">
+      <button onClick={openModal}>
+        <Root />
+      </button>
+      {latex && showMathExpression && <BlockMath>{latex}</BlockMath>}
 
-      {/* Button to show rendered expression (optional) */}
-      <div style={{ marginTop: '20px' }}>
-        <h3>Rendered Math Expression:</h3>
-        
-        {/* Render the LaTeX expression using react-katex */}
-        <BlockMath>{latex}</BlockMath>
-      </div>
+      <Modal isOpen={isModalOpen} onClose={closeModal}>
+        {() => (
+          <>
+            <h2 className="header">Math Editor</h2>
+
+            <math-field
+              ref={mathFieldRef}
+              onInput={handleInput}
+              style={{ width: "100%" }}
+            >
+              {latex}
+            </math-field>
+
+            {latex && (
+              <div style={{ marginTop: "20px" }}>
+                <h3>Preview of Math Expression:</h3>
+
+                <BlockMath>{latex}</BlockMath>
+              </div>
+            )}
+            <div className="footer">
+              <div className="buttons">
+                <div className="btn" onClick={closeModal}>
+                  Cancel
+                </div>
+                <div className="btn" onClick={addExpression}>
+                  Save
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </Modal>
     </div>
   );
 }

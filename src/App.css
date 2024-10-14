@@ -1,11 +1,4 @@
-.math-editor-container {
-  width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  text-align: center;
-}
+
 
 .mathfield {
   width: 100%;
@@ -15,7 +8,8 @@
   margin-bottom: 20px;
 }
 
-.equation-preview, .rendered-equation {
+.equation-preview,
+.rendered-equation {
   margin-top: 20px;
   font-size: 24px;
   border: 1px solid #ddd;
@@ -30,7 +24,7 @@
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 5px;
@@ -38,4 +32,73 @@
 
 .enter-button:hover {
   background-color: #45a049;
+}
+
+.math-editor .modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.math-editor .modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  position: relative;
+}
+
+.math-editor .modal-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  margin-left: 10px;
+  cursor: pointer;
+  color: #6c757d;
+  font-size: 30px;
+  font-weight: bold;
+  border: 1px solid #6c757d;
+  border-radius: 50%;
+  padding: 0 8px;
+}
+
+.math-editor .header {
+  margin-bottom: 20px;
+}
+
+.math-editor .buttons > .btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease; 
+  color: #fff;
+  background-color: #6c757d; /* Bootstrap secondary gray */
+  border-color: #6c757d;
+}
+
+.math-editor .footer {
+  display: flex;
+  justify-content: end;
+  margin-top: 20px;
+}
+
+.math-editor .footer > .buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.math-editor .square-root > svg {
+  background-color: transparent !important;
+  cursor: pointer;
+  border: none !important;
 }
