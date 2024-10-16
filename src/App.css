@@ -44,6 +44,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 100;
 }
 
 .math-editor .modal-content {
@@ -61,12 +62,14 @@
   cursor: pointer;
   margin-left: 10px;
   cursor: pointer;
-  color: #6c757d;
+  background-color: #6c757d;
   font-size: 30px;
   font-weight: bold;
   border: 1px solid #6c757d;
   border-radius: 50%;
   padding: 0 8px;
+  color: #fff;
+
 }
 
 .math-editor .header {
@@ -101,4 +104,9 @@
   background-color: transparent !important;
   cursor: pointer;
   border: none !important;
+}
+
+.math-editor math-field {
+  border: solid 1px #000000 !important;
+  border-radius: 5px;
 }

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "katex/dist/katex.min.css";
 import { BlockMath } from "react-katex";
-import "//unpkg.com/mathlive";
 import "./App.css";
 import Modal from "./modal";
 import Katex from "katex";
@@ -45,12 +44,29 @@ function App() {
   const addToTMCE = () => {
     let iframe = document.getElementById("tinyMceEditor_ifr");
     let innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-
     let p = document.createElement("p");
     p.textContent = latex;
-    p.className = "math-expression";
+    p.className = "math-expression-converted";
     p.setAttribute("data-katex", latex);
     innerDoc.body.appendChild(p);
+    var elements = innerDoc.querySelectorAll(".math-expression-converted");
+    elements.forEach(function (element) {
+      // Get the LaTeX string from the data attribute
+      var latex = element.getAttribute("data-katex");
+      if (latex) {
+        // Clear the existing content
+        element.innerHTML = "";
+        try {
+          // Render the LaTeX string into HTML
+          Katex.render(latex, element, {
+            throwOnError: false,
+            displayMode: true, // Force display mode
+          });
+        } catch (error) {
+          console.error("Error rendering KaTeX expression:", error);
+        }
+      }
+    });
   };
 
   const addExpression = () => {
@@ -62,8 +78,7 @@ function App() {
       Katex.renderToString(latex, {
         throwOnError: true,
       });
-    } catch (error) {
-      console.log(false);
+    } catch (error) { 
       alert("Math expression is invalid, please check once.");
       return;
     }
@@ -89,6 +104,7 @@ function App() {
               ref={mathFieldRef}
               onInput={handleInput}
               style={{ width: "100%" }}
+              className="math-field"
             >
               {latex}
             </math-field>
@@ -113,6 +129,10 @@ function App() {
           </>
         )}
       </Modal>
+
+      <div className="dummy" id="dummy" contentEditable = {true}>
+
+      </div>
     </div>
   );
 }
