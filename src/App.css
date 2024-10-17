@@ -1,13 +1,4 @@
 
-
-.mathfield {
-  width: 100%;
-  border: 1px solid #ddd;
-  padding: 10px;
-  font-size: 18px;
-  margin-bottom: 20px;
-}
-
 .equation-preview,
 .rendered-equation {
   margin-top: 20px;
@@ -17,7 +8,7 @@
 }
 
 .actions {
-  margin-top: 20px;
+  margin-top: 20px !important;
 }
 
 .enter-button {
@@ -34,7 +25,7 @@
   background-color: #45a049;
 }
 
-.math-editor .modal-overlay {
+.math-editor .math-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -44,10 +35,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100;
+  z-index: 100 !important;
 }
 
-.math-editor .modal-content {
+.math-editor .math-modal-content {
   background: white;
   padding: 20px;
   border-radius: 8px;
@@ -55,7 +46,7 @@
   position: relative;
 }
 
-.math-editor .modal-close-btn {
+.math-editor > .math-modal-overlay > .math-modal-content > .math-modal-close-btn {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -72,12 +63,12 @@
 
 }
 
-.math-editor .header {
+.math-editor > .math-modal-overlay > .math-modal-content > .math-header{
   margin-bottom: 20px;
 }
 
-.math-editor .buttons > .btn {
-  padding: 10px 20px;
+.math-editor .math-buttons > .btn {
+  padding: 10px 20px !important;
   font-size: 16px;
   font-weight: 600;
   border-radius: 5px;
@@ -89,13 +80,13 @@
   border-color: #6c757d;
 }
 
-.math-editor .footer {
+.math-editor .math-footer {
   display: flex;
   justify-content: end;
-  margin-top: 20px;
+  margin-top: 20px !important;
 }
 
-.math-editor .footer > .buttons {
+.math-editor .math-footer > .math-buttons {
   display: flex;
   gap: 10px;
 }
@@ -106,7 +97,7 @@
   border: none !important;
 }
 
-.math-editor math-field {
+.math-editor > .math-modal-overlay > .math-modal-content > math-field {
   border: solid 1px #000000 !important;
   border-radius: 5px;
 }

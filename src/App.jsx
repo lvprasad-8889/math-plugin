@@ -8,7 +8,6 @@ import Root from "./assets/root";
 
 function App() {
   const [latex, setLatex] = useState("");
-  const [showMathExpression, setExpression] = useState(false);
 
   const mathFieldRef = useRef(null);
 
@@ -78,27 +77,64 @@ function App() {
       Katex.renderToString(latex, {
         throwOnError: true,
       });
-    } catch (error) { 
+    } catch (error) {
       alert("Math expression is invalid, please check once.");
       return;
     }
 
-    setExpression(true);
     closeModal();
     addToTMCE();
   };
+
+  async function setUp() {
+    let iframe = document.getElementById("tinyMceEditor_ifr");
+    let innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+    async function loadCSS(href, callback) {
+      var link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = href;
+      link.onload = callback;
+      await innerDoc.head.appendChild(link);
+      await document.head.appendChild(link);
+    }
+
+    async function loadScript(src, callback) {
+      var script = document.createElement("script");
+      script.defer = true;
+      script.src = src;
+      script.onload = callback;
+      await innerDoc.head.appendChild(script);
+      await document.head.appendChild(script);
+    }
+
+    await loadCSS(
+      "https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css"
+    );
+    await loadScript(
+      "https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.js"
+    );
+    await loadScript(
+      "https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/auto-render.min.js"
+    );
+
+    return innerDoc;
+  }
+
+  useEffect(() => {
+    setUp();
+  }, []);
 
   return (
     <div className="math-editor">
       <button onClick={openModal}>
         <Root />
       </button>
-      {latex && showMathExpression && <BlockMath>{latex}</BlockMath>}
 
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         {() => (
           <>
-            <h2 className="header">Math Editor</h2>
+            <h2 className="math-header">Math Editor</h2>
 
             <math-field
               ref={mathFieldRef}
@@ -116,8 +152,8 @@ function App() {
                 <BlockMath>{latex}</BlockMath>
               </div>
             )}
-            <div className="footer">
-              <div className="buttons">
+            <div className="math-footer">
+              <div className="math-buttons">
                 <div className="btn" onClick={closeModal}>
                   Cancel
                 </div>
@@ -130,9 +166,7 @@ function App() {
         )}
       </Modal>
 
-      <div className="dummy" id="dummy" contentEditable = {true}>
-
-      </div>
+      <div className="dummy" id="dummy" contentEditable={true}></div>
     </div>
   );
 }
