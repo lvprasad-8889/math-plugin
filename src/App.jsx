@@ -155,14 +155,6 @@ function App() {
       closeModal();
       return;
     }
-    try {
-      Katex.renderToString(latex, {
-        throwOnError: true,
-      });
-    } catch (error) {
-      alert("Math expression is invalid, please check once.");
-      return;
-    }
     closeModal();
     addToTMCE();
   };
