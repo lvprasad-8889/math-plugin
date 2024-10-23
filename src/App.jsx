@@ -10,7 +10,7 @@ function App() {
   const mathFieldRef = useRef(null);
   const previewRef = useRef(null);
   const [currElement, setCurrElement] = useState(null);
-  const [prod, setProd] = useState(true);
+  const [prod, setProd] = useState(false);
 
   const focusMathField = () => {
     setTimeout(() => {
@@ -153,14 +153,6 @@ function App() {
       }
       setCurrElement(null);
       closeModal();
-      return;
-    }
-    try {
-      Katex.renderToString(latex, {
-        throwOnError: true,
-      });
-    } catch (error) {
-      alert("Math expression is invalid, please check once.");
       return;
     }
     closeModal();
