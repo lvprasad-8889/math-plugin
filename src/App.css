@@ -1,3 +1,6 @@
+* {
+  box-sizing: border-box;
+}
 
 .equation-preview,
 .rendered-equation {
@@ -46,7 +49,10 @@
   position: relative;
 }
 
-.math-editor > .math-modal-overlay > .math-modal-content > .math-modal-close-btn {
+.math-editor
+  > .math-modal-overlay
+  > .math-modal-content
+  > .math-modal-close-btn {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -60,10 +66,9 @@
   border-radius: 50%;
   padding: 0 8px;
   color: #fff;
-
 }
 
-.math-editor > .math-modal-overlay > .math-modal-content > .math-header{
+.math-editor > .math-modal-overlay > .math-modal-content > .math-header {
   margin-bottom: 20px;
 }
 
@@ -74,7 +79,7 @@
   border-radius: 5px;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease; 
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
   color: #fff;
   background-color: #6c757d; /* Bootstrap secondary gray */
   border-color: #6c757d;
@@ -100,4 +105,40 @@
 .math-editor > .math-modal-overlay > .math-modal-content > math-field {
   border: solid 1px #000000 !important;
   border-radius: 5px;
+}
+
+.math-editor .math-expression {
+  margin: 10px;
+}
+
+.dummy {
+  border: solid;
+}
+.math-editor .math-expression .math-expression-selected {
+  border: solid 1px #4098fe;
+}
+
+.math-editor .math-expression .math-expression-selected:last-child {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.math-editor .math-expression .math-expression-selected:first-child {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.math-editor .math-expression .math-expression-selected:not(:last-child) {
+  border-right: none;
+}
+.math-editor .math-expression .math-expression-selected:not(:first-child) {
+  border-left: none;
+}
+
+.math-editor .math-expression .math-expression-selected:nth-child(1) {
+  padding-left: 30px;
+}
+
+.math-editor .math-expression .math-expression-selected:last-child {
+  padding-right: 30px;
 }

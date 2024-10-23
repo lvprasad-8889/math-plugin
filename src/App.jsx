@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import "katex/dist/katex.min.css";
-import { BlockMath } from "react-katex";
 import "./App.css";
 import Modal from "./modal";
 import Katex from "katex";
@@ -8,14 +7,10 @@ import Root from "./assets/root";
 
 function App() {
   const [latex, setLatex] = useState("");
-
   const mathFieldRef = useRef(null);
-
-  useEffect(() => {
-    if (mathFieldRef.current) {
-      mathFieldRef.current.focus();
-    }
-  }, []);
+  const previewRef = useRef(null);
+  const [currElement, setCurrElement] = useState(null);
+  const [prod, setProd] = useState(true);
 
   const focusMathField = () => {
     setTimeout(() => {
@@ -26,12 +21,14 @@ function App() {
   };
 
   const handleInput = (evt) => {
-    setLatex(evt.target.value.trim());
+    let val = evt.target.value.trim();
+    setLatex(val);
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => {
+    setLatex("");
     setIsModalOpen(true);
     focusMathField();
   };
@@ -40,36 +37,121 @@ function App() {
     setIsModalOpen(false);
   };
 
+  const updateExpression = (element) => {
+    const latex = element.getAttribute("data-katex");
+
+    if (latex) {
+      try {
+        Katex.render(latex, element, {
+          throwOnError: false,
+          displayMode: true,
+        });
+      } catch (error) {
+        console.error("Error rendering KaTeX:", error);
+      }
+    }
+  };
+
   const addToTMCE = () => {
-    let iframe = document.getElementById("tinyMceEditor_ifr");
-    let innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+    let iframe;
+    let innerDoc;
+    if (prod) {
+      iframe = document.getElementById("tinyMceEditor_ifr");
+      innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+    } else {
+      innerDoc = document.getElementById("dummy");
+    }
     let p = document.createElement("p");
     p.textContent = latex;
-    p.className = "math-expression-converted";
+    p.className = "math-expression";
     p.setAttribute("data-katex", latex);
-    innerDoc.body.appendChild(p);
-    var elements = innerDoc.querySelectorAll(".math-expression-converted");
-    elements.forEach(function (element) {
-      // Get the LaTeX string from the data attribute
-      var latex = element.getAttribute("data-katex");
-      if (latex) {
-        // Clear the existing content
-        element.innerHTML = "";
-        try {
-          // Render the LaTeX string into HTML
-          Katex.render(latex, element, {
-            throwOnError: false,
-            displayMode: true, // Force display mode
-          });
-        } catch (error) {
-          console.error("Error rendering KaTeX expression:", error);
+    p.setAttribute("contenteditable", false);
+
+    innerDoc.appendChild(p);
+
+    updateExpression(p);
+
+    p.addEventListener("click", function (event) {
+      const allElements = innerDoc.querySelectorAll(
+        ".math-expression .katex-html .base"
+      );
+      allElements.forEach((el) => {
+        el.classList.remove("math-expression-selected");
+      });
+
+      const selectedElement = p.querySelectorAll(".katex-html .base");
+
+      selectedElement.forEach((el) => {
+        el.classList.add("math-expression-selected");
+      });
+
+      event.stopPropagation();
+    });
+
+    p.addEventListener("dblclick", function () {
+      let latex = p.getAttribute("data-katex");
+      setCurrElement(p);
+      setIsModalOpen(true);
+      setLatex(latex);
+    });
+
+    innerDoc.addEventListener("keydown", function (e) {
+      const selectedElement = innerDoc.querySelector(
+        ".math-expression .math-expression-selected"
+      );
+
+      // If Backspace is pressed and a math expression is selected, remove only the selected one
+      if (e.key === "Delete") {
+        if (selectedElement) {
+          e.preventDefault(); // Prevent default backspace behavior
+
+          // Remove only the selected math expression
+          selectedElement.closest(".math-expression").remove();
+        } else {
+          // Check if the cursor is directly after any KaTeX expression
+          const selection = window.getSelection();
+          const range = selection.getRangeAt(0);
+          const prevElement = range.startContainer.previousSibling;
+
+          if (
+            prevElement &&
+            prevElement.classList &&
+            prevElement.classList.contains("math-expression")
+          ) {
+            e.preventDefault(); // Prevent default backspace behavior
+            prevElement.remove(); // Remove only the math expression directly before the cursor
+          }
         }
       }
+    });
+
+    // Remove selection on clicking outside of the math-expression
+    innerDoc.addEventListener("click", function () {
+      const allSelectedElements = innerDoc.querySelectorAll(
+        ".math-expression .math-expression-selected"
+      );
+      allSelectedElements.forEach((el) => {
+        el.classList.remove("math-expression-selected");
+      });
     });
   };
 
   const addExpression = () => {
     if (!latex) {
+      closeModal();
+      return;
+    }
+    if (currElement) {
+      try {
+        // Render the LaTeX inside the element
+        Katex.render(latex, currElement, {
+          throwOnError: false,
+          displayMode: true,
+        });
+      } catch (error) {
+        console.error("Error rendering KaTeX:", error);
+      }
+      setCurrElement(null);
       closeModal();
       return;
     }
@@ -81,49 +163,40 @@ function App() {
       alert("Math expression is invalid, please check once.");
       return;
     }
-
     closeModal();
     addToTMCE();
   };
 
-  async function setUp() {
-    let iframe = document.getElementById("tinyMceEditor_ifr");
-    let innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-
-    async function loadCSS(href, callback) {
-      var link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.href = href;
-      link.onload = callback;
-      await innerDoc.head.appendChild(link);
-      await document.head.appendChild(link);
+  useEffect(() => {
+    let iframe;
+    let innerDoc;
+    if (prod) {
+      iframe = document.getElementById("tinyMceEditor_ifr");
+      innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+    } else {
+      innerDoc = document.getElementById("dummy");
     }
+    const elements = innerDoc.querySelectorAll(".math-expression");
 
-    async function loadScript(src, callback) {
-      var script = document.createElement("script");
-      script.defer = true;
-      script.src = src;
-      script.onload = callback;
-      await innerDoc.head.appendChild(script);
-      await document.head.appendChild(script);
-    }
-
-    await loadCSS(
-      "https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css"
-    );
-    await loadScript(
-      "https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.js"
-    );
-    await loadScript(
-      "https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/auto-render.min.js"
-    );
-
-    return innerDoc;
-  }
+    elements.forEach((element) => {
+      updateExpression(element);
+    });
+  }, []);
 
   useEffect(() => {
-    setUp();
-  }, []);
+    if (previewRef.current) {
+      if (latex) {
+        try {
+          Katex.render(latex, previewRef.current, {
+            throwOnError: false,
+            displayMode: true,
+          });
+        } catch (error) {
+          console.error("Error rendering KaTeX:", error);
+        }
+      }
+    }
+  }, [latex]);
 
   return (
     <div className="math-editor">
@@ -148,8 +221,7 @@ function App() {
             {latex && (
               <div style={{ marginTop: "20px" }}>
                 <h3>Preview of Math Expression:</h3>
-
-                <BlockMath>{latex}</BlockMath>
+                <p ref={previewRef}></p>
               </div>
             )}
             <div className="math-footer">
@@ -166,7 +238,7 @@ function App() {
         )}
       </Modal>
 
-      <div className="dummy" id="dummy" contentEditable={true}></div>
+      {!prod && <div className="dummy" id="dummy" contentEditable={true}></div>}
     </div>
   );
 }
