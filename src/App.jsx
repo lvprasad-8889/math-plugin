@@ -10,7 +10,7 @@ function App() {
   const mathFieldRef = useRef(null);
   const previewRef = useRef(null);
   const [currElement, setCurrElement] = useState(null);
-  const [prod, setProd] = useState(true);
+  const [prod, setProd] = useState(false);
 
   const focusMathField = () => {
     setTimeout(() => {
