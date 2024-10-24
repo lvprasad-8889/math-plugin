@@ -162,17 +162,19 @@ function App() {
   useEffect(() => {
     let iframe;
     let innerDoc;
-    if (prod) {
-      iframe = document.getElementById("tinyMceEditor_ifr");
-      innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-    } else {
-      innerDoc = document.getElementById("dummy");
-    }
-    const elements = innerDoc.querySelectorAll(".math-expression");
+    setTimeout(() => {
+      if (prod) {
+        iframe = document.getElementById("tinyMceEditor_ifr");
+        innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+      } else {
+        innerDoc = document.getElementById("dummy");
+      }
+      const elements = innerDoc.querySelectorAll(".math-expression");
 
-    elements.forEach((element) => {
-      updateExpression(element);
-    });
+      elements.forEach((element) => {
+        updateExpression(element);
+      });
+    }, 2000);
   }, []);
 
   useEffect(() => {
