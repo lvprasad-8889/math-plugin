@@ -1,5 +1,5 @@
 * {
-  box-sizing: border-box;
+  box-sizing: border-box !important;
 }
 
 .equation-preview,
@@ -26,50 +26,6 @@
 
 .enter-button:hover {
   background-color: #45a049;
-}
-
-.math-editor .math-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100 !important;
-}
-
-.math-editor .math-modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 80%;
-  position: relative;
-}
-
-.math-editor
-  > .math-modal-overlay
-  > .math-modal-content
-  > .math-modal-close-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  cursor: pointer;
-  margin-left: 10px;
-  cursor: pointer;
-  background-color: #6c757d;
-  font-size: 30px;
-  font-weight: bold;
-  border: 1px solid #6c757d;
-  border-radius: 50%;
-  padding: 0 8px;
-  color: #fff;
-}
-
-.math-editor > .math-modal-overlay > .math-modal-content > .math-header {
-  margin-bottom: 20px;
 }
 
 .math-editor .math-buttons > .btn {
@@ -107,38 +63,24 @@
   border-radius: 5px;
 }
 
-.math-editor .math-expression {
+.math-editor .math-equation {
   margin: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .dummy {
   border: solid;
 }
-.math-editor .math-expression .math-expression-selected {
+
+.math-editor .math-equation .math-equation-selected {
   border: solid 1px #4098fe;
+  padding: 0px 30px;
+  border-radius: 10px;
 }
 
-.math-editor .math-expression .math-expression-selected:last-child {
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-}
-
-.math-editor .math-expression .math-expression-selected:first-child {
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
-}
-
-.math-editor .math-expression .math-expression-selected:not(:last-child) {
-  border-right: none;
-}
-.math-editor .math-expression .math-expression-selected:not(:first-child) {
-  border-left: none;
-}
-
-.math-editor .math-expression .math-expression-selected:nth-child(1) {
-  padding-left: 30px;
-}
-
-.math-editor .math-expression .math-expression-selected:last-child {
-  padding-right: 30px;
+.math-editor .preview-of-math-equation {
+  text-align: center !important;
+  vertical-align: baseline !important;
 }

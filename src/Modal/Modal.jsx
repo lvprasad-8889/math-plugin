@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
+import './Modal.css'
 
 const Modal = ({ isOpen, onClose, children }) => {
   useEffect(() => {
@@ -29,9 +30,12 @@ const Modal = ({ isOpen, onClose, children }) => {
   return (
     <div className="math-modal-overlay" onClick={onClose}>
       <div className="math-modal-content" onClick={(e) => e.stopPropagation()}>
-        <button className="math-modal-close-btn" onClick={onClose}>
-          &times;
-        </button>
+        <div className="math-modal-header">
+          <div className="math-title">Math Editor</div>
+          <button className="math-modal-close-btn" onClick={onClose}>
+            &times;
+          </button>
+        </div>
         {children({ openModal: () => {}, closeModal: onClose })}
       </div>
     </div>

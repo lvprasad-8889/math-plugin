@@ -1,20 +1,111 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+    <title>Math Plugin</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.css"
+      integrity="sha384-NFTC4wvyQKLwuJ8Ez9AvPNBv8zcC2XaQzXSMvtORKw28BdJbB2QE8Ka+OyrIHcQJ"
+      crossorigin="anonymous"
+    />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.js"
+      integrity="sha384-z9arB7KJHppq8kK9AESncXcQd/KXIMMPiCrAdxfFpp+5QU438lgBE7UFGbk+gljP"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+      integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk"
+      crossorigin="anonymous"
+      onload="renderMathInElement(document.body);"
+    ></script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="tiny_mce_math_plugin"></div>
+
     <script type="module" src="/src/main.jsx"></script>
+
     <script type="module">
-      window.addEventListener("DOMContentLoaded", () => 
-        import("//unpkg.com/mathlive?module").then((mathlive) => 
-          mathlive.renderMathInDocument()
-        ).catch(() => console.log("Error in loading mathlive.."))
-      );
+      let prod = window.location.origin !== "http://localhost:5173";
+
+      const startCDN = async () => {
+        if (prod) {
+          setTimeout(async () => {
+            iframe = document.getElementById("tinyMceEditor_ifr");
+            innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+            await innerDoc.head.appendChild(katexStyling);
+            await innerDoc.head.appendChild(katexFunctionality);
+          }, 100);
+        }
+        await document.head.appendChild(script);
+        await document.head.appendChild(katexStyling);
+        await document.head.appendChild(katexFunctionality);
+      };
+
+      const script = document.createElement("script");
+      script.async = true;
+      script.innerHTML = `
+        setTimeout(() => {
+          import("https://unpkg.com/mathlive?module").then((mathlive) => {
+            document.querySelectorAll(".math-expression").forEach((element) => {
+              let latex = element.getAttribute("data-katex");
+              element.innerHTML = mathlive.convertLatexToMarkup(latex);
+            });
+          });
+        }, 100);
+      `;
+
+      const katexStyling = document.createElement("link");
+      katexStyling.rel = "stylesheet";
+      katexStyling.href =
+        "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.css";
+      katexStyling.integrity =
+        "sha384-NFTC4wvyQKLwuJ8Ez9AvPNBv8zcC2XaQzXSMvtORKw28BdJbB2QE8Ka+OyrIHcQJ";
+      katexStyling.crossOrigin = "anonymous";
+
+      const katexFunctionality = document.createElement("script");
+      script.async = true;
+      katexFunctionality.src =
+        "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.js";
+      katexFunctionality.integrity =
+        "sha384-z9arB7KJHppq8kK9AESncXcQd/KXIMMPiCrAdxfFpp+5QU438lgBE7UFGbk+gljP";
+      katexFunctionality.crossOrigin = "anonymous";
+
+      window.addEventListener("DOMContentLoaded", () => {
+        startCDN();
+      });
+    </script>
+
+    <script>
+      const convertLatexToMath = () => {
+        let mathEquations = document.querySelectorAll(".math-equation");
+        mathEquations.forEach((equation) => {
+          let latex = equation.getAttribute("data-katex");
+
+          if (latex) {
+            equation.innerHTML = katex.renderToString(latex, {
+              throwOnError: false,
+              displayMode: true,
+            });
+          }
+        });
+        console.log("done converting every equation...", mathEquations);
+      };
+      const targetNode = document.querySelector(".min-width-wrapper .min-width section .message-list");
+      const config = { attributes: true, childList: false, subtree: false };
+
+      const observer = new MutationObserver(convertLatexToMath);
+      observer.observe(targetNode, config);
+
+      window.addEventListener("DOMContentLoaded", () => {
+        setTimeout(convertLatexToMath, 100);
+      });
     </script>
   </body>
 </html>

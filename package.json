@@ -5,16 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --watch",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
-    "katex": "^0.16.11",
-    "mathlive": "^0.101.0",
+    "mathlive": "^0.101.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-katex": "^3.0.1"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
