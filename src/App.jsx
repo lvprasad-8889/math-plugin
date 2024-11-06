@@ -44,7 +44,7 @@ function App() {
     let innerDoc;
 
     if (prod) {
-      iframe = document.getElementById(editorId);
+      iframe = document.getElementById("tinyMceEditor_ifr");
       innerDoc = iframe.contentDocument || iframe.contentWindow.document;
     } else {
       innerDoc = document.getElementById("dummy");
@@ -174,32 +174,53 @@ function App() {
     addShadowRootToTheDom(previewElement);
   }, [latex, isModalOpen]);
 
+
   useEffect(() => {
-    let iframe;
-    let innerDoc;
-    if (prod) {
-      iframe = document.getElementById(editorId);
-      innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-    } else {
-      innerDoc = document.getElementById("dummy");
-    }
-
-    let nonConvertedMathEqn = innerDoc.querySelectorAll(".math-equation");
-
-    nonConvertedMathEqn.forEach((equation) => {
-      let latex = equation.getAttribute("data-katex");
-
-      if (latex) {
-        equation.innerHTML = katex.renderToString(latex, {
-          throwOnError: false,
-          displayMode: true,
-        });
+    setTimeout(() => {
+      let iframe;
+      let innerDoc;
+      if (prod) {
+        iframe = document.getElementById("tinyMceEditor_ifr");
+        innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+      } else {
+        innerDoc = document.getElementById("dummy");
       }
-    });
-    console.log(
-      "done converting every equation in tiny mce...",
-      nonConvertedMathEqn
-    );
+
+      let nonConvertedMathEqn = innerDoc.querySelectorAll(".math-equation");
+
+      if (nonConvertedMathEqn) {
+        nonConvertedMathEqn.forEach((equation) => {
+          let latex = equation.getAttribute("data-katex");
+          equation.setAttribute("contenteditable", false);
+
+          if (latex) {
+            equation.innerHTML = katex.renderToString(latex, {
+              throwOnError: false,
+              displayMode: true,
+            });
+          }
+
+          equation.addEventListener("click", function (event) {
+            event.preventDefault();
+            setCurrElement(equation);
+            event.stopPropagation();
+          });
+
+          equation.addEventListener("dblclick", function () {
+            setCurrElement(equation);
+            setIsModalOpen(true);
+            setLatex(equation.getAttribute("data-katex"));
+          });
+        });
+
+        console.log(
+          "done converting every equation in tiny mce...",
+          nonConvertedMathEqn
+        );
+      } else {
+        console.log("No equations to convert in tinymce");
+      }
+    }, 2000);
   }, []);
 
   return (

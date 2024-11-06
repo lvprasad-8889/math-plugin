@@ -12,4 +12,4 @@ setTimeout(() => {
     toolbarContainer.insertAdjacentElement("beforebegin", createdMathButton);
 
     document.querySelector("#mceu_0").style.display = "flex";
-  }, 1000);
+  }, 1500);

@@ -85,20 +85,26 @@
     <script>
       const convertLatexToMath = () => {
         let mathEquations = document.querySelectorAll(".math-equation");
-        mathEquations.forEach((equation) => {
-          let latex = equation.getAttribute("data-katex");
+        if (mathEquations) {
+          mathEquations.forEach((equation) => {
+            let latex = equation.getAttribute("data-katex");
 
-          if (latex) {
-            equation.innerHTML = katex.renderToString(latex, {
-              throwOnError: false,
-              displayMode: true,
-            });
-          }
-        });
-        console.log("done converting every equation...", mathEquations);
+            if (latex) {
+              equation.innerHTML = katex.renderToString(latex, {
+                throwOnError: false,
+                displayMode: true,
+              });
+            }
+          });
+          console.log("done converting every equation...", mathEquations);
+        } else {
+          console.log("no math equations to convert.. ")
+        }
       };
-      const targetNode = document.querySelector(".min-width-wrapper .min-width section .message-list");
-      const config = { attributes: true, childList: false, subtree: false };
+      const targetNode = document.querySelector(
+        ".min-width-wrapper .min-width section .message-list"
+      );
+      const config = { attributes: true, childList: true, subtree: false };
 
       const observer = new MutationObserver(convertLatexToMath);
       observer.observe(targetNode, config);
