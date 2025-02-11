@@ -4,7 +4,7 @@ import { convertLatexToMath } from "../RenderEquations/RenderMathEquations";
 
 import plugins from "../MathPlugin/MathPlugin";
 
-import mutations from "../Mutations/ForumTopicPageMutations";
+import forumTopicMutations from "../Mutations/ForumTopicPageMutations";
 
 const mainFunction = () => {
   convertLatexToMath();
@@ -14,13 +14,13 @@ const mainFunction = () => {
     plugins.externalMathPlugin();
   } else if (!variables.isMobile()) {
     if (variables.page.forumTopicPage) {
-      mutations.mutatationForReplyButton();
+      forumTopicMutations.mutatationForReplyButton();
 
       setTimeout(() => {
         if (variables.communityIndex <= 0) {
-          mutations.mutatationForPostReplyButton();
+          forumTopicMutations.mutatationForPostReplyButton();
         }
-        mutations.mutationForDynamicMessages();
+        forumTopicMutations.mutationForDynamicMessages();
       }, 1000);
     } else {
       setTimeout(async () => {
@@ -32,7 +32,7 @@ const mainFunction = () => {
         }
         plugins.internalMathPlugin();
         plugins.externalMathPlugin();
-        mutations.mutationForPreview();
+        forumTopicMutations.mutationForPreview();
         // another internal math plugin to be added after toolbar expanded
         plugins.threeDotsInRichEditor();
       }, 0);

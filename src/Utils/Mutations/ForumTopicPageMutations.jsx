@@ -197,7 +197,7 @@ const mutatationForPostReplyButton = () => {
   }
 };
 
-let mutations = {
+let forumTopicMutations = {
   mutationForPreview,
   startMutationProcess,
   mutationForDynamicMessages,
@@ -206,4 +206,4 @@ let mutations = {
   mutatationForPostReplyButton
 };
 
-export default mutations;
+export default forumTopicMutations;

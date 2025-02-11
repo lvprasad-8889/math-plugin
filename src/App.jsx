@@ -8,7 +8,8 @@ import Modal from "./Modal/Modal";
 import useStore from "./Store/useStore";
 
 import variables from "./Utils/Variables/CommunityVariables";
-import  mathUtils from "./Utils/MathUtils";
+import mathUtils from "./Utils/MathUtils";
+import externalAppMutations from "./Utils/Mutations/ExternalAppMutations";
 
 function App() {
   const { invokeMathPopUp, elementNeedToBeEdited, closeMathPlugin } =
@@ -94,38 +95,6 @@ function App() {
     setCurrElement(null);
   };
 
-  const mutationForRerendingInTinyMCE = async () => {
-    let innerDoc = mathUtils.getInnerDoc();
-
-    function handleMutation(mutations) {
-      mutations.forEach((mutation) => {
-        if (mutation.type === "childList" || mutation.type === "attributes") {
-          innerDoc
-            ?.querySelectorAll(".math-equation")
-            .forEach(async (element) => {
-              mathUtils.removeDraggedMathEquations(innerDoc);
-              mathUtils.setAttributeForMathElement(element);
-              if (!element.shadowRoot) {
-                mathUtils.addShadowRootToTheDom(element, true);
-                mathUtils.addEventsForMathElement(element);
-              }
-            });
-        }
-      });
-    }
-
-    const observer = new MutationObserver(handleMutation);
-
-    const config = {
-      childList: true,
-      attributes: true,
-    };
-
-    if (innerDoc) {
-      observer.observe(innerDoc, config);
-    }
-  };
-
   // we make sure shadow root is applied to preview
   // enabling user to add space in the mathlive editor
   useEffect(() => {
@@ -157,30 +126,10 @@ function App() {
 
   // for observing whether keyboard is visible or not
   useEffect(() => {
-    const mutationCallback = (mutationsList) => {
-      if (isModalOpen) {
-        for (const mutation of mutationsList) {
-          if (mutation.type === "childList") {
-            mutation.addedNodes.forEach((node) => {
-              if (node.classList.contains("ML__keyboard")) {
-                setVirtualKeyboardVisible(true);
-              }
-            });
-
-            mutation.removedNodes.forEach((node) => {
-              if (node.classList.contains("ML__keyboard")) {
-                setVirtualKeyboardVisible(false);
-              }
-            });
-          }
-        }
-      } else {
-        setVirtualKeyboardVisible(false);
-      }
-    };
-
-    const observer = new MutationObserver(mutationCallback);
-    observer.observe(document.body, { childList: true, subtree: false });
+    let observer = externalAppMutations.mutationForVirtualKeyboard(
+      isModalOpen,
+      setVirtualKeyboardVisible
+    );
     return () => {
       observer.disconnect();
     };
@@ -190,7 +139,7 @@ function App() {
   useEffect(() => {
     let timer = setTimeout(() => {
       mathUtils.startProcessOfMathEquation();
-      mutationForRerendingInTinyMCE();
+      externalAppMutations.mutationForRerendingInTinyMCE();
     }, 0);
     return () => clearTimeout(timer);
   }, []);
@@ -208,7 +157,10 @@ function App() {
 
   return (
     <div className="math-plugin">
-      <div onClick={variables.prod ? () => {} : openModal} className="math-plugin-btn">
+      <div
+        onClick={variables.prod ? () => {} : openModal}
+        className="math-plugin-btn"
+      >
         <Root />
       </div>
 
@@ -258,7 +210,9 @@ function App() {
                       ? "disable-math-btn"
                       : ""
                   }`}
-                  disabled={!mathUtils.isValidKaTeXEquation(latex) || !latex.length}
+                  disabled={
+                    !mathUtils.isValidKaTeXEquation(latex) || !latex.length
+                  }
                   onClick={addExpression}
                 >
                   Save
