@@ -1,0 +1,91 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  --keyboard-zindex: 3000;
+}
+
+.math-plugin-btn {
+  pointer-events: none;
+  opacity: 0;
+}
+
+.math-plugin-invalid-message {
+  color: #cc0000;
+  margin-top: 5px;
+}
+
+.math-plugin-preview {
+  margin-top: 10px;
+  overflow: auto;
+  max-height: 40vh;
+}
+
+.math-plugin .math-buttons > .math-btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  color: #fff;
+  background-color: #6c757d; /* Bootstrap secondary gray */
+  border-color: #6c757d;
+}
+
+.disable-math-btn {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.math-plugin .math-footer {
+  display: flex;
+  justify-content: end;
+  margin-top: 5px;
+}
+
+.math-plugin .math-footer > .math-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.math-plugin .square-root > svg {
+  background-color: transparent;
+  cursor: pointer;
+  border: none;
+}
+
+math-field.math-field {
+  border: solid 1px #000000;
+  border-radius: 5px;
+}
+
+.math-plugin .math-equation {
+  width: fit-content;
+  margin: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.math-plugin-dummy {
+  border: solid;
+  width: 100%;
+}
+
+.math-equation-selected {
+  border: solid 1px #4098fe;
+  padding: 0px 30px;
+  border-radius: 10px;
+}
+
+.preview-of-math-equation {
+  text-align: center;
+  vertical-align: baseline;
+}
+
+.math-field.custom-font {
+  font-family: "Arial", sans-serif;
+}

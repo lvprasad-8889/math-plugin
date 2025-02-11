@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Math Plugin</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.css"
+      integrity="sha384-NFTC4wvyQKLwuJ8Ez9AvPNBv8zcC2XaQzXSMvtORKw28BdJbB2QE8Ka+OyrIHcQJ"
+      crossorigin="anonymous"
+    />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.js"
+      integrity="sha384-z9arB7KJHppq8kK9AESncXcQd/KXIMMPiCrAdxfFpp+5QU438lgBE7UFGbk+gljP"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+      integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk"
+      crossorigin="anonymous"
+      onload="renderMathInElement(document.body);"
+    ></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
+  </head>
+  <body>
+    <div
+      id="tiny_mce_math_plugin"
+      class="mce-widget mce-btn mce-btn-small lia-mce-math-plugin"
+      aria-label="Insert math"
+      tabindex="-1"
+      style="display: flex"
+    ></div>
+
+    <script type="module" src="/src/main.jsx"></script>
+
+    <script>
+      function checkCommunity(words) {
+        const origin = window.location.origin;
+
+        let result;
+        words.map((word, index) => {
+          if (origin.includes(word)) {
+            result = index;
+            return;
+          }
+        });
+        return result;
+      }
+
+      const wordsToCheck = ["italent", "jmp", , "sas", "sap"];
+      const communityIndex = checkCommunity(wordsToCheck)
+        ? checkCommunity(wordsToCheck)
+        : 0;
+
+      let communityCdn = {
+        0: "#threadeddetailmessagelist",
+        1: ".lia-component-reply-list > :first-child",
+      };
+
+      const convertLatexToMath = () => {
+        let mathEquations = document.querySelectorAll(".math-equation");
+        if (mathEquations) {
+          mathEquations.forEach((equation) => {
+            let latex = equation.getAttribute("data-katex");
+
+            if (latex) {
+              equation.innerHTML = katex.renderToString(latex, {
+                throwOnError: false,
+                displayMode: true,
+              });
+            }
+          });
+          console.log("done converting every equation...", mathEquations);
+        } else {
+          console.log("no math equations to convert.. ");
+        }
+      };
+      const targetNode = document.querySelector(
+        ".min-width-wrapper .min-width section .message-list"
+      );
+      const config = { attributes: true, childList: true, subtree: false };
+
+      const cdnObserver = new MutationObserver(convertLatexToMath);
+      if (targetNode) {
+        cdnObserver.observe(targetNode, config);
+      }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        setTimeout(convertLatexToMath, 100);
+
+        const forumTopicPage =
+          document.body.classList.contains("ForumTopicPage");
+
+        if (forumTopicPage) {
+          const forumTopicElement = document.querySelector(
+            communityCdn[communityIndex]
+          );
+          const forumTopicParent =
+            communityIndex <= 0
+              ? forumTopicElement.parentElement
+              : forumTopicElement;
+
+          const forumTopicConfig = {
+            attributes: false,
+            childList: true,
+            subtree: false,
+          };
+          const forumTopicObserver = new MutationObserver(convertLatexToMath);
+          forumTopicObserver.observe(forumTopicParent, forumTopicConfig);
+
+          if (communityCdn[communityIndex] == 1) {
+            const forumTopicElementJmp = document.querySelector(
+              ".linear-message-list.message-list"
+            );
+
+            console.log("hello word from jmp", forumTopicElementJmp);
+
+            const forumTopicObserverJmp = new MutationObserver(
+              convertLatexToMath
+            );
+            forumTopicObserverJmp.observe(
+              forumTopicElementJmp,
+              forumTopicConfig
+            );
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

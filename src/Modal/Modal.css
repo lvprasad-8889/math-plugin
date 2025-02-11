@@ -1,0 +1,65 @@
+.math-plugin .math-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.math-plugin .keyboard-visible {
+  align-items: start;
+}
+
+.math-plugin .math-modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  position: relative;
+  margin-top: 5px;
+}
+
+.math-plugin .math-modal-close-btn {
+  all: unset;
+  cursor: pointer;
+  background-color: #6c757d;
+  font-size: 30px;
+  font-weight: bold;
+  border: 1px solid #6c757d;
+  border-radius: 50%;
+  padding: 2px 11px;
+  color: #fff;
+  opacity: 1;
+}
+
+.math-close-btn {
+  color: #fff;
+  font-size: 30px;
+}
+
+.math-plugin .math-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.math-plugin .math-title {
+  font-size: 18px;
+  line-height: 17px;
+  font-family: Arial;
+  font-weight: bold;
+}
+
+.math-plugin .math-plugin-preview-title {
+  font-size: 14px;
+  line-height: 17px;
+  font-family: Arial;
+  font-weight: bold;
+  margin-bottom: 20px;
+}

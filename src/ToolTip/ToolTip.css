@@ -1,0 +1,45 @@
+/* Tooltip container */
+.math-plugin-tooltip-container {
+  position: relative;
+  display: inline-block;
+}
+
+/* Tooltip text */
+.math-plugin-tooltip-text {
+  visibility: hidden;
+  width: 80px;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  text-align: center;
+  padding: 4px;
+
+  /* Positioning the tooltip below the element */
+  position: absolute;
+  top: 120%; /* Below the element */
+  left: 50%;
+  font-size: 11px;
+  transform: translateX(-50%);
+  z-index: 1;
+
+  /* Fade-in effect */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* Tooltip arrow */
+.math-plugin-tooltip-text::after {
+  content: "";
+  position: absolute;
+  bottom: 100%; /* Above the tooltip */
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent rgba(0, 0, 0, 0.8) transparent;
+}
+
+/* Show tooltip on hover */
+.math-plugin-tooltip-container:hover .math-plugin-tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}

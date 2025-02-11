@@ -1,0 +1,10 @@
+.square-root {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.add-spacing {
+    padding: 2.5px;
+}
