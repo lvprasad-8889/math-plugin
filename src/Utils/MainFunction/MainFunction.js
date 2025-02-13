@@ -1,13 +1,13 @@
 import variables from "../Variables/CommunityVariables";
 
-import { convertLatexToMath } from "../RenderEquations/RenderMathEquations";
-
 import plugins from "../MathPlugin/MathPlugin";
 
 import forumTopicMutations from "../Mutations/ForumTopicPageMutations";
 
+import startProcessOfRenderingMathEquations from '../Mutations/JustRenderMathEquationMutations'
+
 const mainFunction = () => {
-  convertLatexToMath();
+  startProcessOfRenderingMathEquations();
   variables.isMathPluginUser();
   if (!variables.prod) {
     plugins.internalMathPlugin();
@@ -15,7 +15,6 @@ const mainFunction = () => {
   } else if (!variables.isMobile()) {
     if (variables.page.forumTopicPage) {
       forumTopicMutations.mutatationForReplyButton();
-
       setTimeout(() => {
         if (variables.communityIndex <= 0) {
           forumTopicMutations.mutatationForPostReplyButton();

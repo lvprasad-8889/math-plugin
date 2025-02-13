@@ -179,6 +179,15 @@ const startProcessOfMathEquation = () => {
   }
 };
 
+const previewOfMathEquation = (isModalOpen, latex) => {
+  if (isModalOpen) {
+    let previewElement = document.querySelector(".preview-of-math-equation");
+    if (previewElement) {
+      addShadowRootToTheDom(previewElement, false, latex);
+    }
+  }
+};
+
 const mathUtils = {
   trimLatex,
   isValidKaTeXEquation,
@@ -189,7 +198,8 @@ const mathUtils = {
   getInnerDoc,
   addShadowRootToTheDom,
   startProcessOfMathEquation,
-  addEventsForMathElement
+  addEventsForMathElement,
+  previewOfMathEquation,
 };
 
 export default mathUtils;

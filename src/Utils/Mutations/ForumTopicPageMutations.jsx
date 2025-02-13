@@ -5,6 +5,7 @@ import { createRoot } from "react-dom/client";
 import variables from "../Variables/CommunityVariables";
 
 import plugins from "../MathPlugin/MathPlugin";
+import convertLatexToMath from "../RenderEquations/RenderMathEquations";
 
 let mutationsAdded = [];
 

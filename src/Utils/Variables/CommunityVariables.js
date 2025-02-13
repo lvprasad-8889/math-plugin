@@ -115,6 +115,11 @@ const isMathPluginUser = () => {
   useStore.getState().setHasMathPluginRole(mathPluginUser);
 };
 
+let communityCdn = {
+  0: "#threadeddetailmessagelist",
+  1: ".lia-component-reply-list > :first-child",
+};
+
 let variables = {
   community,
   communityIndex,
@@ -125,18 +130,8 @@ let variables = {
   pageClass,
   prod,
   tkbPageException,
+  communityCdn
 };
 
 export default variables;
 
-export {
-  community,
-  communityIndex,
-  isMathPluginUser,
-  isMobile,
-  makeInsertVideoBtnInline,
-  page,
-  pageClass,
-  prod,
-  tkbPageException,
-};

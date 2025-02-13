@@ -96,30 +96,25 @@ function App() {
   };
 
   // we make sure shadow root is applied to preview
-  // enabling user to add space in the mathlive editor
+  // enabling user to add space and enter new line in the mathlive editor
   useEffect(() => {
-    if (isModalOpen) {
-      let previewElement = document.querySelector(".preview-of-math-equation");
-      if (previewElement) {
-        mathUtils.addShadowRootToTheDom(previewElement, false, latex);
-      }
-    }
+    mathUtils.previewOfMathEquation(isModalOpen, latex);
 
     if (mathFieldRef.current && isModalOpen) {
-      const mathfield = mathFieldRef.current;
+      const mathField = mathFieldRef.current;
       focusMathField();
       const handleKeyDown = async (event) => {
         if (event.code === "Space") {
-          mathfield.insert("\\;");
+          mathField.insert("\\;");
         } else if (event.shiftKey && event.key === "Enter") {
           setLatex(latex + "\\\\");
           event.preventDefault();
         }
       };
-      mathfield.addEventListener("keydown", handleKeyDown);
+      mathField.addEventListener("keydown", handleKeyDown);
 
       return () => {
-        mathfield.removeEventListener("keydown", handleKeyDown);
+        mathField.removeEventListener("keydown", handleKeyDown);
       };
     }
   }, [latex, isModalOpen]);
