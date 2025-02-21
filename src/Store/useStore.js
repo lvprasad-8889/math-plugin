@@ -5,6 +5,7 @@ const useStore = create((set) => ({
   elementNeedToBeEdited: "",
   insideJmp: false,
   hasMathPluginRole: false,
+  updateTinyMceBody: false,
   openMathPlugin: (element = "") =>
     set((state) => {
       return { elementNeedToBeEdited: element, invokeMathPopUp: true };
@@ -16,6 +17,11 @@ const useStore = create((set) => ({
   setHasMathPluginRole: (payload) => {
     set((state) => ({ hasMathPluginRole: payload }));
   },
+  setUpdateTinyMceBody : (payload) => {
+    set((state) => ({
+      updateTinyMceBody: payload
+    }))
+  }
 }));
 
 export default useStore;

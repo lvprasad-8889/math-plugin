@@ -1,5 +1,5 @@
-import variables from "./Variables/CommunityVariables";
 import useStore from "../Store/useStore";
+import variables from "./Variables/CommunityVariables";
 
 let globalState = useStore.getState();
 
@@ -25,19 +25,115 @@ const isValidKaTeXEquation = (equation) => {
   }
 };
 
+const checkLastChildEmptyParagraph = () => {
+  let lastChild;
+
+  if (variables.prod) {
+    const editor = tinymce.activeEditor;
+    lastChild = editor.getBody().lastElementChild;
+  } else {
+    let innerDoc = getInnerDoc();
+    lastChild = innerDoc && innerDoc.lastElementChild;
+  }
+
+  const isLastChildEmptyParagraph =
+    lastChild &&
+    lastChild.tagName === "P" &&
+    lastChild.children.length === 1 &&
+    lastChild.firstElementChild.tagName === "BR" &&
+    lastChild.firstElementChild.hasAttribute("data-mce-bogus");
+
+  if (isLastChildEmptyParagraph) {
+    lastChild.remove();
+  }
+  return isLastChildEmptyParagraph;
+};
+
+const checkLastParagraphWithNbsp = () => {
+  let lastChild;
+
+  if (variables.prod) {
+    const editor = tinymce.activeEditor;
+    lastChild = editor.getBody().lastElementChild;
+  } else {
+    let innerDoc = getInnerDoc();
+    lastChild = innerDoc && innerDoc.lastElementChild;
+  }
+  const isLastParagraphWithNbsp =
+    lastChild &&
+    lastChild.tagName === "P" &&
+    lastChild.innerHTML.trim() === "&nbsp;";
+
+  return isLastParagraphWithNbsp;
+};
+
 const addNewLineAfterMathEqn = () => {
+  let innerDoc = getInnerDoc();
+
   const p = document.createElement("p");
   const br = document.createElement("br");
   br.setAttribute("data-mce-bogus", "1");
 
   p.appendChild(br);
 
-  addToTextArea(p);
+  innerDoc && innerDoc.appendChild(p);
+};
+
+const addElementAtCursorToTinyMCE = (element) => {
+  const editor = tinymce.activeEditor;
+  const selection = editor.selection;
+  const elementHtml = element.outerHTML;
+
+  // Remove selection if an existing non-editable element is selected
+  const selectedNode = selection.getNode();
+  if (selectedNode && selectedNode.contentEditable === "false") {
+    selection.collapse(false); // Collapse to the end to avoid replacement
+  }
+
+  // Ensure we start a transaction
+  editor.undoManager.transact(() => {
+    // Insert the element safely without replacing the existing one
+    editor.execCommand("mceInsertContent", false, elementHtml);
+
+    // Ensure math gets re-rendered
+    editor.setContent(editor.getContent(), { format: "raw" });
+
+    // Move cursor after the inserted element
+    setTimeout(() => {
+      const insertedElements = editor
+        .getBody()
+        .querySelectorAll(element.tagName.toLowerCase());
+      const insertedElement = insertedElements[insertedElements.length - 1]; // Get the last inserted element
+      if (insertedElement) {
+        let parent = insertedElement.parentNode;
+        let nextSibling = insertedElement.nextSibling;
+
+        // Move cursor *after* the inserted element
+        if (nextSibling) {
+          editor.selection.setCursorLocation(parent, nextSibling);
+        } else {
+          // If there's no nextSibling, place the cursor after the parent node
+          let range = document.createRange();
+          range.setStartAfter(insertedElement);
+          range.collapse(true);
+          selection.setRng(range);
+        }
+      }
+    }, 0);
+  });
+
+  // Ensure TinyMCE registers the change
+  editor.nodeChanged();
 };
 
 const addToTextArea = (element) => {
   let innerDoc = getInnerDoc();
-  innerDoc && innerDoc.appendChild(element);
+  checkLastChildEmptyParagraph();
+  if (variables.prod) {
+    addElementAtCursorToTinyMCE(element);
+  } else {
+    innerDoc && innerDoc.appendChild(element);
+  }
 };
 
 const setAttributeForMathElement = (element) => {
@@ -165,10 +261,14 @@ const startProcessOfMathEquation = () => {
   if (nonConvertedMathEqn && nonConvertedMathEqn.length) {
     nonConvertedMathEqn.forEach((equation) => {
       setAttributeForMathElement(equation);
-      addNewLineAfterMathEqn();
       addShadowRootToTheDom(equation, true);
       addEventsForMathElement(equation);
     });
+
+    setTimeout(() => {
+      console.log("trimming yet to begin..");
+      trimAllParagraphTagsWithNbsp();
+    }, 1000);
 
     console.log(
       "done converting every equation in tiny mce...",
@@ -188,6 +288,24 @@ const previewOfMathEquation = (isModalOpen, latex) => {
   }
 };
 
+const trimAllParagraphTagsWithNbsp = () => {
+  if (variables.prod) {
+    const editor = tinymce.activeEditor;
+    const paragraphs = editor.getBody().querySelectorAll("p");
+
+    paragraphs.forEach((p, index) => {
+      if (
+        p.className != "math-equation" &&
+        (p.innerHTML.trim() === "&nbsp;" || p.innerHTML.trim() === "")
+      ) {
+        p.remove();
+      }
+    });
+    checkLastChildEmptyParagraph();
+    addNewLineAfterMathEqn();
+  }
+};
+
 const mathUtils = {
   trimLatex,
   isValidKaTeXEquation,
@@ -200,6 +318,9 @@ const mathUtils = {
   startProcessOfMathEquation,
   addEventsForMathElement,
   previewOfMathEquation,
+  checkLastParagraphWithNbsp,
+  checkLastChildEmptyParagraph,
+  trimAllParagraphTagsWithNbsp,
 };
 
 export default mathUtils;

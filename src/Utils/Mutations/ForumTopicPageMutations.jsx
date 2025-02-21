@@ -6,6 +6,7 @@ import variables from "../Variables/CommunityVariables";
 
 import plugins from "../MathPlugin/MathPlugin";
 import convertLatexToMath from "../RenderEquations/RenderMathEquations";
+import mathUtils from "../MathUtils";
 
 let mutationsAdded = [];
 
@@ -64,22 +65,24 @@ const startMutationProcess = async (message) => {
 };
 
 const mutationForDynamicMessages = () => {
-  variables.community[variables.communityIndex].dynamicMessageSelectors.forEach((selector) => {
-    let element = document.querySelector(selector);
+  variables.community[variables.communityIndex].dynamicMessageSelectors.forEach(
+    (selector) => {
+      let element = document.querySelector(selector);
 
-    if (element) {
-      if (variables.communityIndex <= 0) {
-        element = element.parentElement;
+      if (element) {
+        if (variables.communityIndex <= 0) {
+          element = element.parentElement;
+        }
+        const observer = new MutationObserver(mutatationForReplyButton);
+        const forumTopicConfig = {
+          attributes: false,
+          childList: true,
+          subtree: false,
+        };
+        observer.observe(element, forumTopicConfig);
       }
-      const observer = new MutationObserver(mutatationForReplyButton);
-      const forumTopicConfig = {
-        attributes: false,
-        childList: true,
-        subtree: false,
-      };
-      observer.observe(element, forumTopicConfig);
     }
-  });
+  );
   variables.communityIndex <= 0 && mutatationForPostReplyButton();
 };
 
@@ -89,7 +92,12 @@ const mutationForEditMessageInJmp = (replies) => {
       mutations.forEach((mutation) => {
         mutation.target.childNodes.forEach((child) => {
           if (child.id && child.id.startsWith("inlineMessageEditEditor")) {
-            setTimeout(() => startMutationProcess(child), 500);
+            setTimeout(() => {
+              startMutationProcess(child);
+            }, 500);
+            setTimeout(() => {
+              mathUtils.trimAllParagraphTagsWithNbsp();
+            }, 1000);
           }
         });
       });
@@ -204,7 +212,7 @@ let forumTopicMutations = {
   mutationForDynamicMessages,
   mutationForEditMessageInJmp,
   mutatationForReplyButton,
-  mutatationForPostReplyButton
+  mutatationForPostReplyButton,
 };
 
 export default forumTopicMutations;

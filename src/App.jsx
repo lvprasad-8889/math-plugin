@@ -12,8 +12,13 @@ import mathUtils from "./Utils/MathUtils";
 import externalAppMutations from "./Utils/Mutations/ExternalAppMutations";
 
 function App() {
-  const { invokeMathPopUp, elementNeedToBeEdited, closeMathPlugin } =
-    useStore();
+  const {
+    invokeMathPopUp,
+    elementNeedToBeEdited,
+    closeMathPlugin,
+    updateTinyMceBody,
+    setUpdateTinyMceBody,
+  } = useStore();
 
   const mathFieldRef = useRef(null);
 
@@ -149,6 +154,15 @@ function App() {
       }
     }
   }, [invokeMathPopUp]);
+
+  useEffect(() => {
+    if (updateTinyMceBody) {
+      tinymce.activeEditor.setContent(tinymce.activeEditor.getContent(), {
+        format: "raw",
+      });
+      setUpdateTinyMceBody(false);
+    }
+  }, [updateTinyMceBody]);
 
   return (
     <div className="math-plugin">

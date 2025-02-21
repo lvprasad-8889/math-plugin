@@ -4,15 +4,27 @@ import variables from "../Variables/CommunityVariables";
 function handleMutation(mutationsList, observer) {
   for (let mutation of mutationsList) {
     if (mutation.type === "attributes" || mutation.type === "childList") {
+      console.log("Hello sir, I am here...");
       convertLatexToMath();
     }
   }
 }
 
 const mutationForLanguageTranslator = () => {
-  const elements = document.querySelectorAll(
-    ".message-subject > .lia-message-subject"
-  );
+  let selector;
+  if (variables.page.forumTopicPage) {
+    selector = ".message-subject > .lia-message-subject";
+  } else if (variables.page.BlogPage) {
+    selector = ".lia-tkb-article-subject";
+  } else {
+    selector = ".lia-blog-article-page-article-subject";
+  }
+
+  const elements = document.querySelector(selector);
+
+  console.log("selector is", selector);
+
+  console.log(elements);
   const observerConfig = {
     attributes: true,
     childList: true,
@@ -31,7 +43,9 @@ const mutationForDynamicMessages = () => {
       variables.communityCdn[variables.communityIndex]
     );
     const forumTopicParent =
-    variables.communityIndex <= 0 ? forumTopicElement.parentElement : forumTopicElement;
+      variables.communityIndex <= 0
+        ? forumTopicElement.parentElement
+        : forumTopicElement;
 
     const forumTopicConfig = {
       attributes: false,
@@ -71,7 +85,7 @@ const mutationForMinWidthWrapper = () => {
 
 const startProcessOfRenderingMathEquations = () => {
   convertLatexToMath();
-  mutationForLanguageTranslator();
+  // mutationForLanguageTranslator();
   mutationForDynamicMessages();
   if (variables.communityIndex <= 0) {
     // for community page, forum topic page in italent2.demo.lithium.com

@@ -5,7 +5,9 @@ import useStore from "../Store/useStore";
 
 const Root = () => {
   const { insideJmp } = useStore();
-  let [exception, setException] = useState(variables.tkbPageException && insideJmp);
+  let [exception, setException] = useState(
+    variables.page.editPage || (variables.tkbPageException && insideJmp)
+  );
   const [color, setColor] = useState("#747474");
 
   const onMouseEnter = () => {
@@ -21,7 +23,9 @@ const Root = () => {
   };
 
   useEffect(() => {
-    setException(variables.tkbPageException && insideJmp);
+    setException(
+      variables.page.editPage || (variables.tkbPageException && insideJmp)
+    );
   }, [insideJmp]);
 
   useEffect(() => {

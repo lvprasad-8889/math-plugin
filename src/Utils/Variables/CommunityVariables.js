@@ -51,6 +51,8 @@ const page = {
   tkbArticleEditorPage: pageClass === "TkbArticleEditorPage",
   tkbArticlePage: pageClass === "TkbArticlePage",
   editPage: pageClass === "EditPage",
+  BlogPage: pageClass && pageClass.startsWith("Blog"),
+  TkbPage: pageClass && pageClass.startsWith("Tkb"),
 };
 
 let tkbPageException =
@@ -113,6 +115,7 @@ const isMobile = () => {
 const isMathPluginUser = () => {
   let mathPluginUser = document.body.classList.contains("math-plugin-user");
   useStore.getState().setHasMathPluginRole(mathPluginUser);
+  return mathPluginUser;
 };
 
 let communityCdn = {
@@ -130,8 +133,7 @@ let variables = {
   pageClass,
   prod,
   tkbPageException,
-  communityCdn
+  communityCdn,
 };
 
 export default variables;
-

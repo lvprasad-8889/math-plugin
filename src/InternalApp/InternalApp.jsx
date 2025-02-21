@@ -8,7 +8,8 @@ import variables from "../Utils/Variables/CommunityVariables";
 import mathUtils from "../Utils/MathUtils";
 
 const InternalApp = () => {
-  const { openMathPlugin, hasMathPluginRole } = useStore();
+  const { openMathPlugin, hasMathPluginRole, setUpdateTinyMceBody } =
+    useStore();
 
   const internalMathButtonClicked = () => {
     openMathPlugin();
@@ -16,16 +17,19 @@ const InternalApp = () => {
 
   useEffect(() => {
     try {
-      if (hasMathPluginRole && variables.prod && tinymce && tinymce.activeEditor) {
+      if (
+        hasMathPluginRole &&
+        variables.prod &&
+        tinymce &&
+        tinymce.activeEditor
+      ) {
         setTimeout(() => {
-          tinymce.activeEditor.getBody().innerHTML =
-            tinymce.activeEditor.getBody().innerHTML;
+          setUpdateTinyMceBody(true);
         }, 100);
       }
       if (!hasMathPluginRole) {
         if (variables.prod && tinymce && tinymce.activeEditor) {
-          activeEditor.getBody().innerHTML =
-            tinymce.activeEditor.getBody().innerHTML;
+          setUpdateTinyMceBody(true);
         }
         let innerDoc = mathUtils.getInnerDoc();
         if (innerDoc) {

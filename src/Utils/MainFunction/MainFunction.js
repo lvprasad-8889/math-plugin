@@ -4,7 +4,7 @@ import plugins from "../MathPlugin/MathPlugin";
 
 import forumTopicMutations from "../Mutations/ForumTopicPageMutations";
 
-import startProcessOfRenderingMathEquations from '../Mutations/JustRenderMathEquationMutations'
+import startProcessOfRenderingMathEquations from "../Mutations/JustRenderMathEquationMutations";
 
 const mainFunction = () => {
   startProcessOfRenderingMathEquations();
@@ -24,7 +24,8 @@ const mainFunction = () => {
     } else {
       setTimeout(async () => {
         if (
-          (variables.page.tkbArticleEditorPage || variables.page.tkbArticlePage) &&
+          (variables.page.tkbArticleEditorPage ||
+            variables.page.tkbArticlePage) &&
           variables.communityIndex === 1
         ) {
           variables.makeInsertVideoBtnInline();
@@ -39,4 +40,5 @@ const mainFunction = () => {
   }
 };
 
+// export default mainFunction;
 export default mainFunction;

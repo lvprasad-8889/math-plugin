@@ -29,40 +29,40 @@ const mutationForVirtualKeyboard = (isModalOpen, setVirtualKeyboardVisible) => {
 };
 
 const mutationForRerendingInTinyMCE = async () => {
-    let innerDoc = mathUtils.getInnerDoc();
+  let innerDoc = mathUtils.getInnerDoc();
 
-    function handleMutation(mutations) {
-      mutations.forEach((mutation) => {
-        if (mutation.type === "childList" || mutation.type === "attributes") {
-          innerDoc
-            ?.querySelectorAll(".math-equation")
-            .forEach(async (element) => {
-              mathUtils.removeDraggedMathEquations(innerDoc);
-              mathUtils.setAttributeForMathElement(element);
-              if (!element.shadowRoot) {
-                mathUtils.addShadowRootToTheDom(element, true);
-                mathUtils.addEventsForMathElement(element);
-              }
-            });
-        }
-      });
-    }
+  function handleMutation(mutations) {
+    mutations.forEach((mutation) => {
+      if (mutation.type === "childList" || mutation.type === "attributes") {
+        innerDoc
+          ?.querySelectorAll(".math-equation")
+          .forEach(async (element) => {
+            mathUtils.removeDraggedMathEquations(innerDoc);
+            mathUtils.setAttributeForMathElement(element);
+            if (!element.shadowRoot) {
+              mathUtils.addShadowRootToTheDom(element, true);
+              mathUtils.addEventsForMathElement(element);
+            }
+          });
+      }
+    });
+  }
 
-    const observer = new MutationObserver(handleMutation);
+  const observer = new MutationObserver(handleMutation);
 
-    const config = {
-      childList: true,
-      attributes: true,
-    };
-
-    if (innerDoc) {
-      observer.observe(innerDoc, config);
-    }
+  const config = {
+    childList: true,
+    attributes: true,
   };
 
+  if (innerDoc) {
+    observer.observe(innerDoc, config);
+  }
+};
+
 let externalAppMutations = {
-    mutationForVirtualKeyboard,
-    mutationForRerendingInTinyMCE
-}
+  mutationForVirtualKeyboard,
+  mutationForRerendingInTinyMCE,
+};
 
 export default externalAppMutations;
