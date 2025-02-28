@@ -93,11 +93,12 @@ const mutationForEditMessageInJmp = (replies) => {
         mutation.target.childNodes.forEach((child) => {
           if (child.id && child.id.startsWith("inlineMessageEditEditor")) {
             setTimeout(() => {
-              startMutationProcess(child);
+              try {
+                startMutationProcess(child);
+              } catch (err) {
+                startMutationProcess(child);
+              }
             }, 500);
-            setTimeout(() => {
-              mathUtils.trimAllParagraphTagsWithNbsp();
-            }, 1000);
           }
         });
       });

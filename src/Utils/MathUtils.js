@@ -38,18 +38,16 @@ const checkLastChildEmptyParagraph = () => {
 
   const isLastChildEmptyParagraph =
     lastChild &&
-    lastChild.tagName === "P" &&
+    !lastChild.classList.contains("math-equation") &&
+    lastChild.tagName === "p" &&
     lastChild.children.length === 1 &&
-    lastChild.firstElementChild.tagName === "BR" &&
+    lastChild.firstElementChild.tagName === "br" &&
     lastChild.firstElementChild.hasAttribute("data-mce-bogus");
 
-  if (isLastChildEmptyParagraph) {
-    lastChild.remove();
-  }
-  return isLastChildEmptyParagraph;
+  return { isLastChildEmptyParagraph, lastChild };
 };
 
-const checkLastParagraphWithNbsp = () => {
+const checkLastElementInTinyMCE = () => {
   let lastChild;
 
   if (variables.prod) {
@@ -59,76 +57,60 @@ const checkLastParagraphWithNbsp = () => {
     let innerDoc = getInnerDoc();
     lastChild = innerDoc && innerDoc.lastElementChild;
   }
-  const isLastParagraphWithNbsp =
-    lastChild &&
-    lastChild.tagName === "P" &&
-    lastChild.innerHTML.trim() === "&nbsp;";
+    const isLastParagraphWithNbsp =
+      lastChild &&
+      lastChild.tagName === "P" &&
+      !lastChild.classList.contains("math-equation") &&
+      lastChild.textContent.trim() === "&nbsp;";
 
-  return isLastParagraphWithNbsp;
+    const isLastChildEmptyParagraph =
+      lastChild &&
+      !lastChild.classList.contains("math-equation") &&
+      lastChild.tagName === "P" &&
+      lastChild.children.length === 1 &&
+      lastChild.firstElementChild.tagName === "BR" &&
+      lastChild.firstElementChild.hasAttribute("data-mce-bogus");
+
+  return isLastParagraphWithNbsp || isLastChildEmptyParagraph;
 };
 
-const addNewLineAfterMathEqn = () => {
+const addNewLineAfterMathEqn = async () => {
   let innerDoc = getInnerDoc();
+  let p = document.createElement("p");
+  let br = document.createElement("br");
 
-  const p = document.createElement("p");
-  const br = document.createElement("br");
-  br.setAttribute("data-mce-bogus", "1");
+  br.setAttribute("data-mce-bogus", 1);
 
   p.appendChild(br);
 
-  innerDoc && innerDoc.appendChild(p);
+  !checkLastElementInTinyMCE() && innerDoc && innerDoc.appendChild(p);
 };
+
 
 const addElementAtCursorToTinyMCE = (element) => {
   const editor = tinymce.activeEditor;
-  const selection = editor.selection;
-  const elementHtml = element.outerHTML;
 
-  // Remove selection if an existing non-editable element is selected
+  const selection = editor.selection;
   const selectedNode = selection.getNode();
+
   if (selectedNode && selectedNode.contentEditable === "false") {
-    selection.collapse(false); // Collapse to the end to avoid replacement
+    selection.collapse(false);
   }
 
-  // Ensure we start a transaction
+  if (!editor) return;
+
   editor.undoManager.transact(() => {
-    // Insert the element safely without replacing the existing one
-    editor.execCommand("mceInsertContent", false, elementHtml);
-
-    // Ensure math gets re-rendered
-    editor.setContent(editor.getContent(), { format: "raw" });
-
-    // Move cursor after the inserted element
-    setTimeout(() => {
-      const insertedElements = editor
-        .getBody()
-        .querySelectorAll(element.tagName.toLowerCase());
-      const insertedElement = insertedElements[insertedElements.length - 1]; // Get the last inserted element
-      if (insertedElement) {
-        let parent = insertedElement.parentNode;
-        let nextSibling = insertedElement.nextSibling;
-
-        // Move cursor *after* the inserted element
-        if (nextSibling) {
-          editor.selection.setCursorLocation(parent, nextSibling);
-        } else {
-          // If there's no nextSibling, place the cursor after the parent node
-          let range = document.createRange();
-          range.setStartAfter(insertedElement);
-          range.collapse(true);
-          selection.setRng(range);
-        }
-      }
-    }, 0);
+    editor.insertContent(element.outerHTML, { format: "raw" });
+    addNewLineAfterMathEqn();
   });
 
-  // Ensure TinyMCE registers the change
+  editor.selection.select(editor.getBody().lastChild, true);
+  editor.selection.collapse(true);
   editor.nodeChanged();
 };
 
 const addToTextArea = (element) => {
   let innerDoc = getInnerDoc();
-  checkLastChildEmptyParagraph();
   if (variables.prod) {
     addElementAtCursorToTinyMCE(element);
   } else {
@@ -265,11 +247,6 @@ const startProcessOfMathEquation = () => {
       addEventsForMathElement(equation);
     });
 
-    setTimeout(() => {
-      console.log("trimming yet to begin..");
-      trimAllParagraphTagsWithNbsp();
-    }, 1000);
-
     console.log(
       "done converting every equation in tiny mce...",
       nonConvertedMathEqn
@@ -301,7 +278,6 @@ const trimAllParagraphTagsWithNbsp = () => {
         p.remove();
       }
     });
-    checkLastChildEmptyParagraph();
     addNewLineAfterMathEqn();
   }
 };
@@ -318,7 +294,7 @@ const mathUtils = {
   startProcessOfMathEquation,
   addEventsForMathElement,
   previewOfMathEquation,
-  checkLastParagraphWithNbsp,
+  checkLastElementInTinyMCE,
   checkLastChildEmptyParagraph,
   trimAllParagraphTagsWithNbsp,
 };

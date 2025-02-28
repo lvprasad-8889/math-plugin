@@ -4,9 +4,10 @@ import variables from "../Utils/Variables/CommunityVariables";
 import useStore from "../Store/useStore";
 
 const Root = () => {
+  // variables.page.editPage || (variables.tkbPageException && insideJmp)
   const { insideJmp } = useStore();
   let [exception, setException] = useState(
-    variables.page.editPage || (variables.tkbPageException && insideJmp)
+    (variables.tkbPageException && insideJmp)
   );
   const [color, setColor] = useState("#747474");
 
@@ -23,8 +24,10 @@ const Root = () => {
   };
 
   useEffect(() => {
+    
+    //  variables.page.editPage || (variables.tkbPageException && insideJmp)
     setException(
-      variables.page.editPage || (variables.tkbPageException && insideJmp)
+      (variables.tkbPageException && insideJmp)
     );
   }, [insideJmp]);
 

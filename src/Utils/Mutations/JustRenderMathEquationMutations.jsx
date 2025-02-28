@@ -1,6 +1,8 @@
 import convertLatexToMath from "../RenderEquations/RenderMathEquations";
 import variables from "../Variables/CommunityVariables";
 
+let countOfMathEquations = 0;
+
 function handleMutation(mutationsList, observer) {
   for (let mutation of mutationsList) {
     if (mutation.type === "attributes" || mutation.type === "childList") {
@@ -83,8 +85,26 @@ const mutationForMinWidthWrapper = () => {
   }
 };
 
+const reRenderMathEquationForConfirmation = () => {
+  let interval = setInterval(() => {
+    let count = document.querySelectorAll(".math-equation").length;
+    if (count != countOfMathEquations) {
+      convertLatexToMath();
+      countOfMathEquations = count;
+    }
+  }, 1000);
+
+  setTimeout(() => clearInterval(interval), 10000);
+};
+
 const startProcessOfRenderingMathEquations = () => {
+  countOfMathEquations = document.querySelectorAll(".math-equation").length;
+
   convertLatexToMath();
+
+  if (variables.page.blogArticlePage) {
+    reRenderMathEquationForConfirmation();
+  }
   // mutationForLanguageTranslator();
   mutationForDynamicMessages();
   if (variables.communityIndex <= 0) {

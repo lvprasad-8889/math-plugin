@@ -53,6 +53,7 @@ const page = {
   editPage: pageClass === "EditPage",
   BlogPage: pageClass && pageClass.startsWith("Blog"),
   TkbPage: pageClass && pageClass.startsWith("Tkb"),
+  blogArticlePage: pageClass === "BlogArticlePage"
 };
 
 let tkbPageException =

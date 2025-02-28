@@ -59,7 +59,7 @@ function App() {
     mathUtils.addShadowRootToTheDom(element, false, latex);
     mathUtils.addEventsForMathElement(element);
     mathUtils.addToTextArea(element);
-    mathUtils.addNewLineAfterMathEqn();
+    // mathUtils.addNewLineAfterMathEqn();
   };
 
   const closeModal = () => {
