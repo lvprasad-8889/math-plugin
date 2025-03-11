@@ -36,8 +36,8 @@ const isInsideJmp = () => {
 isInsideJmp();
 
 // variables for necessaru info
+const prod = !/^http:\/\/localhost:\d{4}$/.test(origin);
 
-const prod = origin == "http://localhost:5173" ? false : true;
 
 const classList = document.body.classList;
 

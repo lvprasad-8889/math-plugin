@@ -3,9 +3,10 @@ function isHTMLElement(element) {
 }
 
 const convertLatexToMath = (richDoc = undefined) => {
-  let mathEquations = (richDoc && isHTMLElement(richDoc))
-    ? richDoc.querySelectorAll(".math-equation")
-    : document.querySelectorAll(".math-equation");
+  let mathEquations =
+    richDoc && isHTMLElement(richDoc)
+      ? richDoc.querySelectorAll(".math-equation")
+      : document.querySelectorAll(".math-equation");
   if (mathEquations) {
     mathEquations.forEach((equation) => {
       let latex = equation.getAttribute("data-katex");
@@ -22,6 +23,5 @@ const convertLatexToMath = (richDoc = undefined) => {
     console.log("no math equations to convert.. ");
   }
 };
-
 
 export default convertLatexToMath;

@@ -3,7 +3,7 @@
 }
 
 body {
-  --keyboard-zindex: 3000;
+  --keyboard-zindex: 99999;
 }
 
 .math-plugin-btn {

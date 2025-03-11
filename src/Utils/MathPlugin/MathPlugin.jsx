@@ -9,7 +9,8 @@ import createMathButton from "../CreateMathButton/CreateMathButton";
 
 const threeDotsInRichEditor = async () => {
   let selectorInThreeDots =
-    (variables.page.postPage || variables.page.editPage) && variables.communityIndex === 1
+    (variables.page.postPage || variables.page.editPage) &&
+    variables.communityIndex === 1
       ? ".MessageEditor [id^='rich'] [aria-label='Expand toolbar']"
       : '[aria-label="Expand toolbar"]';
 
@@ -52,37 +53,39 @@ const threeDotsInRichEditor = async () => {
 };
 
 const internalMathPlugin = async () => {
-  let currTargetElement = createMathButton(false, true);
-
-  let root = createRoot(currTargetElement);
-
-  await root.render(<InternalApp />);
-
-  let createdMathButton = document.getElementById(
-    "tiny_mce_math_plugin_internal"
-  );
-
   let richDoc = variables.page.forumTopicPage
     ? document.querySelector('[id^="rich_"]')
     : document.querySelector('[id^="rich"]');
-
-  if (!variables.prod) {
-    document.body.prepend(createdMathButton);
-    return;
-  }
 
   const toolbarContainer =
     richDoc?.querySelector('[aria-label="Insert video"]') ||
     richDoc?.querySelector('[aria-label="Insert/edit image"]');
 
-  toolbarContainer?.insertAdjacentElement("afterend", createdMathButton);
+  if (toolbarContainer || !variables.prod) {
+    let currTargetElement = createMathButton(false, true);
 
-  createdMathButton.classList.add(
-    "mce-widget",
-    "mce-btn",
-    "mce-btn-small",
-    "lia-mce-math-plugin"
-  );
+    let root = createRoot(currTargetElement);
+
+    await root.render(<InternalApp />);
+
+    let createdMathButton = document.getElementById(
+      "tiny_mce_math_plugin_internal"
+    );
+
+    if (!variables.prod) {
+      document.body.prepend(createdMathButton);
+      return;
+    }
+
+    toolbarContainer.insertAdjacentElement("afterend", createdMathButton);
+
+    createdMathButton.classList.add(
+      "mce-widget",
+      "mce-btn",
+      "mce-btn-small",
+      "lia-mce-math-plugin"
+    );
+  }
 };
 
 const externalMathPlugin = async () => {
@@ -106,12 +109,12 @@ const externalMathPlugin = async () => {
     createdMathButton.style.position = variables.prod ? "absolute" : "";
 
     createdMathButton.style.top = "-70px";
-    // dont keep syle property visibility as hidden, it doesnt open popup
 
-    // beforePreview.prepend(createdMathButton);
+    // dont keep syle property visibility as hidden, it doesnt open popup
     document.body.prepend(createdMathButton);
   }
 };
+
 let plugins = { externalMathPlugin, internalMathPlugin, threeDotsInRichEditor };
 
 export default plugins;

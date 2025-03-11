@@ -191,7 +191,7 @@ function App() {
             </math-field>
             {!mathUtils.isValidKaTeXEquation(latex) && (
               <div className="math-plugin-invalid-message">
-                * Inavlid math equations cannot be added
+                * Invalid math equations cannot be added
               </div>
             )}
 
