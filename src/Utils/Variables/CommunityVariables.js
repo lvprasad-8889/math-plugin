@@ -124,6 +124,8 @@ let communityCdn = {
   1: ".lia-component-reply-list > :first-child",
 };
 
+const fontSize = prod ? "1.5rem" : "1rem";
+
 let variables = {
   community,
   communityIndex,
@@ -135,6 +137,7 @@ let variables = {
   prod,
   tkbPageException,
   communityCdn,
+  fontSize
 };
 
 export default variables;

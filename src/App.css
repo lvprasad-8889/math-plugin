@@ -6,6 +6,7 @@ body {
   --keyboard-zindex: 99999;
 }
 
+
 .math-plugin-btn {
   pointer-events: none;
   opacity: 0;
@@ -19,7 +20,15 @@ body {
 .math-plugin-preview {
   margin-top: 10px;
   overflow: auto;
-  max-height: 40vh;
+  max-height: 3 0vh;
+}
+
+.math-plugin-latex {
+  margin-top: 10px;
+}
+
+.math-plugin-latex-label {
+  font-weight: bold;
 }
 
 .math-plugin .math-buttons > .math-btn {
@@ -35,9 +44,9 @@ body {
   border-color: #6c757d;
 }
 
-.disable-math-btn {
+.disable-math-save-btn {
   opacity: 0.5;
-  cursor: default;
+  cursor: default !important;
 }
 
 .math-plugin .math-footer {
@@ -57,9 +66,9 @@ body {
   border: none;
 }
 
-math-field.math-field {
-  border: solid 1px #000000;
-  border-radius: 5px;
+math-field {
+  border: solid 1px #000000 !important;
+  border-radius: 8px;
 }
 
 .math-plugin .math-equation {
@@ -88,4 +97,8 @@ math-field.math-field {
 
 .math-field.custom-font {
   font-family: "Arial", sans-serif;
+}
+
+#mathlive-suggestion-popover {
+  z-index: 99999 !important;
 }

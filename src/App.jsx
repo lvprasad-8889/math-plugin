@@ -10,6 +10,10 @@ import useStore from "./Store/useStore";
 import variables from "./Utils/Variables/CommunityVariables";
 import mathUtils from "./Utils/MathUtils";
 import externalAppMutations from "./Utils/Mutations/ExternalAppMutations";
+import {
+  changeLatex,
+  getDisplayandLatex,
+} from "./Utils/RenderEquations/RenderMathEquations";
 
 function App() {
   const {
@@ -28,8 +32,8 @@ function App() {
   const [isVirtualKeyboardVisible, setVirtualKeyboardVisible] = useState(false);
 
   const [latex, setLatex] = useState("");
+  const [inline, setInline] = useState(false);
 
-  // on clicking save button, this function will be executed
   const addExpression = () => {
     if (!mathUtils.isValidKaTeXEquation(latex) || !latex.trim()) {
       closeModal();
@@ -40,8 +44,10 @@ function App() {
       if (!latex.trim()) {
         currElement.remove();
       } else {
-        currElement.setAttribute("data-katex", latex);
-        mathUtils.addShadowRootToTheDom(currElement, false, latex);
+        let newLatex = changeLatex(latex, inline);
+        currElement.setAttribute("data-katex", newLatex);
+        mathUtils.setAttributeForMathElement(currElement);
+        mathUtils.addShadowRootToTheDom(currElement, false, newLatex);
       }
       setCurrElement(null);
       closeModal();
@@ -53,10 +59,11 @@ function App() {
 
   const addToTMCE = async () => {
     let element = document.createElement("p");
-    element.setAttribute("data-katex", latex);
+    let updatedLatex = changeLatex(latex, inline);
+    element.setAttribute("data-katex", updatedLatex);
 
     mathUtils.setAttributeForMathElement(element);
-    mathUtils.addShadowRootToTheDom(element, false, latex);
+    mathUtils.addShadowRootToTheDom(element, false, updatedLatex);
     mathUtils.addEventsForMathElement(element);
     mathUtils.addToTextArea(element);
     // mathUtils.addNewLineAfterMathEqn();
@@ -94,20 +101,34 @@ function App() {
     });
   };
 
+  
+
+  const handleLatexInput = (evt) => {
+    let val = evt.target.value.trim();
+    const replacedVal = val.replace(/\\~/g, "\\sim");
+
+    setLatex((prevLatex) => {
+      if (evt.nativeEvent.data === "insertLineBreak") {
+        return prevLatex + "\\\\";
+      }
+      return replacedVal;
+    });
+  };
+
   const openModal = () => {
     setLatex("");
     setIsModalOpen(true);
     setCurrElement(null);
+    setInline(false);
   };
 
   // we make sure shadow root is applied to preview
   // enabling user to add space and enter new line in the mathlive editor
   useEffect(() => {
-    mathUtils.previewOfMathEquation(isModalOpen, latex);
+    mathUtils.previewOfMathEquation(isModalOpen, changeLatex(latex, inline));
 
     if (mathFieldRef.current && isModalOpen) {
       const mathField = mathFieldRef.current;
-      focusMathField();
       const handleKeyDown = async (event) => {
         if (event.code === "Space") {
           mathField.insert("\\;");
@@ -123,6 +144,12 @@ function App() {
       };
     }
   }, [latex, isModalOpen]);
+
+  useEffect(() => {
+    if (isModalOpen && mathFieldRef.current) {
+      mathFieldRef.current.focus();
+    }
+  }, [isModalOpen]);
 
   // for observing whether keyboard is visible or not
   useEffect(() => {
@@ -150,7 +177,12 @@ function App() {
       if (elementNeedToBeEdited) {
         setCurrElement(elementNeedToBeEdited);
         setIsModalOpen(true);
-        setLatex(elementNeedToBeEdited.getAttribute("data-katex"));
+        let dataKatex = elementNeedToBeEdited.getAttribute("data-katex");
+        let latexTobeEdited = getDisplayandLatex(dataKatex).latex;
+
+        let displayMode = getDisplayandLatex(dataKatex).displayMode;
+        setLatex(latexTobeEdited);
+        setInline(!displayMode);
       }
     }
   }, [invokeMathPopUp]);
@@ -158,7 +190,7 @@ function App() {
   useEffect(() => {
     if (updateTinyMceBody) {
       tinymce.activeEditor.setContent(tinymce.activeEditor.getContent(), {
-        format: "raw",
+        format: "html",
       });
       setUpdateTinyMceBody(false);
     }
@@ -182,16 +214,45 @@ function App() {
           <>
             <math-field
               ref={mathFieldRef}
-              onInput={handleInput}
+              onInput={(event) => handleInput(event)}
               style={{ width: "100%" }}
-              class="math-field custom-font"
+              className="math-field custom-font"
               math-mode-space="\;"
+              key="input"
             >
               {latex}
             </math-field>
             {!mathUtils.isValidKaTeXEquation(latex) && (
               <div className="math-plugin-invalid-message">
                 * Invalid math equations cannot be added
+              </div>
+            )}
+
+            <div className="form-check">
+              <input
+                type="checkbox"
+                className="form-check-input"
+                id="inline-checkbox"
+                checked={inline}
+                onChange={() => setInline(!inline)}
+              />
+              <label className="form-check-label" htmlFor="inline-checkbox">
+                Inline equation
+              </label>
+            </div>
+
+            {latex && (
+              <div className="math-plugin-latex">
+                <div className="math-plugin-latex-label">Latex:</div>
+                <input
+                  type="text"
+                  name=""
+                  id="latex"
+                  key="latexInput"
+                  value={latex}
+                  className="form-control"
+                  onChange={(event) => handleLatexInput(event)}
+                />
               </div>
             )}
 
@@ -216,7 +277,7 @@ function App() {
                 <button
                   className={`math-btn ${
                     !mathUtils.isValidKaTeXEquation(latex) || !latex.length
-                      ? "disable-math-btn"
+                      ? "disable-math-save-btn"
                       : ""
                   }`}
                   disabled={

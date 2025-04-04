@@ -1,4 +1,6 @@
 import useStore from "../Store/useStore";
+import { getMathEquation } from "./Katex/KatexUtils";
+import { getDisplayandLatex } from "./RenderEquations/RenderMathEquations";
 import variables from "./Variables/CommunityVariables";
 
 let globalState = useStore.getState();
@@ -16,9 +18,16 @@ const trimLatex = (tempLatex) => {
 
 const isValidKaTeXEquation = (equation) => {
   let trimmedLatex = trimLatex(equation);
+  if (!trimmedLatex) {
+    return true;
+  }
   try {
     katex.renderToString(trimmedLatex);
-    return true;
+    return (
+      true &&
+      trimmedLatex.length > 0 &&
+      trimmedLatex.trim().replace(/\\/g, "").length > 0
+    );
   } catch (error) {
     console.error("Invalid equation:", error.message);
     return false;
@@ -57,19 +66,19 @@ const checkLastElementInTinyMCE = () => {
     let innerDoc = getInnerDoc();
     lastChild = innerDoc && innerDoc.lastElementChild;
   }
-    const isLastParagraphWithNbsp =
-      lastChild &&
-      lastChild.tagName === "P" &&
-      !lastChild.classList.contains("math-equation") &&
-      lastChild.textContent.trim() === "&nbsp;";
+  const isLastParagraphWithNbsp =
+    lastChild &&
+    lastChild.tagName === "P" &&
+    !lastChild.classList.contains("math-equation") &&
+    lastChild.textContent.trim() === "&nbsp;";
 
-    const isLastChildEmptyParagraph =
-      lastChild &&
-      !lastChild.classList.contains("math-equation") &&
-      lastChild.tagName === "P" &&
-      lastChild.children.length === 1 &&
-      lastChild.firstElementChild.tagName === "BR" &&
-      lastChild.firstElementChild.hasAttribute("data-mce-bogus");
+  const isLastChildEmptyParagraph =
+    lastChild &&
+    !lastChild.classList.contains("math-equation") &&
+    lastChild.tagName === "P" &&
+    lastChild.children.length === 1 &&
+    lastChild.firstElementChild.tagName === "BR" &&
+    lastChild.firstElementChild.hasAttribute("data-mce-bogus");
 
   return isLastParagraphWithNbsp || isLastChildEmptyParagraph;
 };
@@ -85,7 +94,6 @@ const addNewLineAfterMathEqn = async () => {
 
   !checkLastElementInTinyMCE() && innerDoc && innerDoc.appendChild(p);
 };
-
 
 const addElementAtCursorToTinyMCE = (element) => {
   const editor = tinymce.activeEditor;
@@ -119,11 +127,15 @@ const addToTextArea = (element) => {
 };
 
 const setAttributeForMathElement = (element) => {
-  element.setAttribute("contenteditable", false);
+  let { displayMode } = getDisplayandLatex(element.getAttribute("data-katex"));
   element.setAttribute("draggable", "false");
   element.className = "math-equation";
-  element.style.width = "fit-content";
-  element.style.minWidth = "99%";
+  if (displayMode) {
+    element.style.width = "fit-content";
+    element.style.minWidth = "99%";
+  } else {
+    element.style.display = "inline";
+  }
 };
 
 const removeDraggedMathEquations = (innerDoc) => {
@@ -158,6 +170,24 @@ const addShadowRootToTheDom = async (
   customLatex = false,
   latex = ""
 ) => {
+  let finalLatex;
+  if (customLatex) {
+    finalLatex = element.getAttribute("data-katex");
+  } else {
+    finalLatex = latex;
+  }
+
+  let displayMode = getDisplayandLatex(finalLatex).displayMode;
+
+  const content = document.createElement(displayMode ? "div" : "span");
+  content.className = "math-content";
+
+  if (!displayMode) {
+    element.style.padding = "5px 5px";
+    element.style.margin = "0px 5px";
+    element.style.minWidth = "";
+  }
+
   if (element && !element.shadowRoot) {
     const shadowRoot = element.attachShadow({ mode: "open" });
     const head = document.createElement("head");
@@ -186,23 +216,11 @@ const addShadowRootToTheDom = async (
     const style = document.createElement("style");
     style.textContent = `
       .math-content {
-        font-size: 1.25rem;
+        font-size: ${variables.fontSize} !important;
       }
     `;
 
-    const content = document.createElement("div");
-    content.className = "math-content";
-
-    let finalLatex;
-    if (customLatex) {
-      finalLatex = element.getAttribute("data-katex");
-    } else {
-      finalLatex = latex;
-    }
-    content.innerHTML = await katex.renderToString(finalLatex, {
-      throwOnError: false,
-      displayMode: true,
-    });
+    content.innerHTML = await getMathEquation(finalLatex);
 
     shadowRoot.appendChild(head);
     shadowRoot.appendChild(style);
@@ -214,12 +232,7 @@ const addShadowRootToTheDom = async (
     if (element.shadowRoot.children[2]) {
       element.shadowRoot.children[2].remove();
     }
-    const content = document.createElement("div");
-    content.className = "math-content";
-    content.innerHTML = await katex.renderToString(latex, {
-      throwOnError: false,
-      displayMode: true,
-    });
+    content.innerHTML = await getMathEquation(finalLatex);
     element.shadowRoot.appendChild(content);
     return;
   }
@@ -282,6 +295,22 @@ const trimAllParagraphTagsWithNbsp = () => {
   }
 };
 
+const replacePWithSpan = (element) => {
+  if (!element || element.tagName !== "P") return;
+
+  const spanElement = document.createElement("span");
+
+  for (const attr of element.attributes) {
+    spanElement.setAttribute(attr.name, attr.value);
+  }
+
+  spanElement.innerHTML = element.innerHTML;
+
+  element.parentNode.replaceChild(spanElement, element);
+
+  return spanElement;
+};
+
 const mathUtils = {
   trimLatex,
   isValidKaTeXEquation,
@@ -297,6 +326,7 @@ const mathUtils = {
   checkLastElementInTinyMCE,
   checkLastChildEmptyParagraph,
   trimAllParagraphTagsWithNbsp,
+  replacePWithSpan,
 };
 
 export default mathUtils;

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import "./Modal.css";
+import variables from "../Utils/Variables/CommunityVariables";
 
 const Modal = ({ isOpen, onClose, keyboardVisible, children }) => {
   useEffect(() => {
@@ -25,6 +26,10 @@ const Modal = ({ isOpen, onClose, keyboardVisible, children }) => {
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    document.documentElement.style.setProperty("--font-size", variables.fontSize);
+  }, []);
+
   if (!isOpen) return null;
 
   return (
@@ -32,13 +37,17 @@ const Modal = ({ isOpen, onClose, keyboardVisible, children }) => {
       className={`math-modal-overlay ${
         keyboardVisible ? "keyboard-visible" : ""
       }`}
-      onClick={onClose}
+      onClick={(e) => {
+        if (e.target.classList.contains("math-modal-overlay")) {
+          return;
+        }
+        onClose();
+      }}
     >
       <div className="math-modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="math-modal-header">
-          <div className="math-title">Math Formula</div>
-          <button className="math-modal-close-btn" onClick={onClose}>
-            <div className="math-close-btn">&times;</div>
+          <div className="math-modal-title">Math Formula</div>
+          <button className="math-close-btn" onClick={onClose}>
           </button>
         </div>
         {children({ openModal: () => {}, closeModal: onClose })}
