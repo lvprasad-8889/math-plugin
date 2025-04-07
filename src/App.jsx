@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
 
 import "mathlive";
+
 import Root from "./assets/root";
 import Modal from "./Modal/Modal";
 
@@ -22,6 +23,8 @@ function App() {
     closeMathPlugin,
     updateTinyMceBody,
     setUpdateTinyMceBody,
+    setShowLatex,
+    showLatex,
   } = useStore();
 
   const mathFieldRef = useRef(null);
@@ -45,9 +48,22 @@ function App() {
         currElement.remove();
       } else {
         let newLatex = changeLatex(latex, inline);
-        currElement.setAttribute("data-katex", newLatex);
-        mathUtils.setAttributeForMathElement(currElement);
-        mathUtils.addShadowRootToTheDom(currElement, false, newLatex);
+        let newCurrElement;
+        if (inline) {
+          newCurrElement = mathUtils.convertPtoSpan(currElement);
+        } else {
+          newCurrElement = mathUtils.convertSpantoP(currElement);
+        }
+        newCurrElement.setAttribute("data-katex", newLatex);
+        mathUtils.addEventsForMathElement(newCurrElement);
+        mathUtils.setAttributeForMathElement(newCurrElement);
+        mathUtils.addShadowRootToTheDom(newCurrElement, false, newLatex);
+        if (variables.prod) {
+          const editor = tinymce.activeEditor;
+          editor.selection.select(editor.getBody().lastChild, true);
+          editor.selection.collapse(true);
+          editor.nodeChanged();
+        }
       }
       setCurrElement(null);
       closeModal();
@@ -58,7 +74,7 @@ function App() {
   };
 
   const addToTMCE = async () => {
-    let element = document.createElement("p");
+    let element = document.createElement(inline ? "span" : "p");
     let updatedLatex = changeLatex(latex, inline);
     element.setAttribute("data-katex", updatedLatex);
 
@@ -66,13 +82,13 @@ function App() {
     mathUtils.addShadowRootToTheDom(element, false, updatedLatex);
     mathUtils.addEventsForMathElement(element);
     mathUtils.addToTextArea(element);
-    // mathUtils.addNewLineAfterMathEqn();
   };
 
   const closeModal = () => {
     setCurrElement(null);
     setIsModalOpen(false);
     closeMathPlugin();
+    mathVirtualKeyboard.hide();
   };
 
   // delete the math equation
@@ -101,8 +117,6 @@ function App() {
     });
   };
 
-  
-
   const handleLatexInput = (evt) => {
     let val = evt.target.value.trim();
     const replacedVal = val.replace(/\\~/g, "\\sim");
@@ -120,13 +134,12 @@ function App() {
     setIsModalOpen(true);
     setCurrElement(null);
     setInline(false);
+    setVirtualKeyboardVisible(false);
   };
 
   // we make sure shadow root is applied to preview
   // enabling user to add space and enter new line in the mathlive editor
   useEffect(() => {
-    mathUtils.previewOfMathEquation(isModalOpen, changeLatex(latex, inline));
-
     if (mathFieldRef.current && isModalOpen) {
       const mathField = mathFieldRef.current;
       const handleKeyDown = async (event) => {
@@ -146,20 +159,27 @@ function App() {
   }, [latex, isModalOpen]);
 
   useEffect(() => {
-    if (isModalOpen && mathFieldRef.current) {
-      mathFieldRef.current.focus();
+    mathUtils.previewOfMathEquation(isModalOpen, changeLatex(latex, inline));
+  }, [latex, isModalOpen, inline]);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      focusMathField();
+      mathUtils.setStylesForMathField();
     }
   }, [isModalOpen]);
 
   // for observing whether keyboard is visible or not
   useEffect(() => {
-    let observer = externalAppMutations.mutationForVirtualKeyboard(
-      isModalOpen,
-      setVirtualKeyboardVisible
-    );
-    return () => {
-      observer.disconnect();
-    };
+    if (isModalOpen) {
+      let observer = externalAppMutations.mutationForVirtualKeyboard(
+        isModalOpen,
+        setVirtualKeyboardVisible
+      );
+      return () => {
+        observer.disconnect();
+      };
+    }
   }, [isModalOpen]);
 
   // statrting a mutation on tinymce for re rendering
@@ -196,6 +216,17 @@ function App() {
     }
   }, [updateTinyMceBody]);
 
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      "--math-plugin-font-size",
+      variables.fontSize
+    );
+    document.documentElement.style.setProperty(
+      "--math-plugin-theme",
+      variables.theme
+    );
+  }, []);
+
   return (
     <div className="math-plugin">
       <div
@@ -219,6 +250,7 @@ function App() {
               className="math-field custom-font"
               math-mode-space="\;"
               key="input"
+              math-virtual-keyboard-policy="manual"
             >
               {latex}
             </math-field>
@@ -228,20 +260,52 @@ function App() {
               </div>
             )}
 
-            <div className="form-check">
-              <input
-                type="checkbox"
-                className="form-check-input"
-                id="inline-checkbox"
-                checked={inline}
-                onChange={() => setInline(!inline)}
-              />
-              <label className="form-check-label" htmlFor="inline-checkbox">
-                Inline equation
-              </label>
+            <div className="after-math-field">
+              <div className="form-check">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="inline-checkbox"
+                  checked={inline}
+                  onChange={() => {
+                    setInline(!inline);
+                  }}
+                />
+                <label className="form-check-label" htmlFor="inline-checkbox">
+                  Inline Equation
+                </label>
+              </div>
+
+              {latex && (
+                <div
+                  className="form-check"
+                  onClick={() => setShowLatex(!showLatex)}
+                >
+                  <svg
+                    id="toggleArrow"
+                    className={`math-plugin-latex-arrow ${
+                      showLatex ? "rotated" : ""
+                    }`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke={variables.theme}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    width={"20px"}
+                    height={"10px"}
+                  >
+                    <polyline points="6 15 12 9 18 15" />
+                  </svg>
+                  <label className="form-check-label" htmlFor="show-latex">
+                    {showLatex ? "Hide Latex" : "Show Latex"}
+                  </label>
+                </div>
+              )}
             </div>
 
-            {latex && (
+            {latex && showLatex && (
               <div className="math-plugin-latex">
                 <div className="math-plugin-latex-label">Latex:</div>
                 <input
@@ -251,6 +315,7 @@ function App() {
                   key="latexInput"
                   value={latex}
                   className="form-control"
+                  autoComplete="off"
                   onChange={(event) => handleLatexInput(event)}
                 />
               </div>
@@ -261,7 +326,11 @@ function App() {
                 <div className="math-plugin-preview-title">
                   Preview of Math equation:
                 </div>
-                <div className="preview-of-math-equation"></div>
+                {inline ? (
+                  <span className="preview-of-math-equation"></span>
+                ) : (
+                  <div className="preview-of-math-equation"></div>
+                )}
               </div>
             )}
             <div className="math-footer">

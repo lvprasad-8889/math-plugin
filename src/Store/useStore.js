@@ -6,6 +6,7 @@ const useStore = create((set) => ({
   insideJmp: false,
   hasMathPluginRole: false,
   updateTinyMceBody: false,
+  showLatex: true,
   openMathPlugin: (element = "") =>
     set((state) => {
       return { elementNeedToBeEdited: element, invokeMathPopUp: true };
@@ -20,6 +21,11 @@ const useStore = create((set) => ({
   setUpdateTinyMceBody : (payload) => {
     set((state) => ({
       updateTinyMceBody: payload
+    }))
+  },
+  setShowLatex: (payload) => {
+    set((state) => ({
+      showLatex : payload
     }))
   }
 }));

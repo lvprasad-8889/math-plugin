@@ -1,7 +1,3 @@
-:root {
-  --font-size: 1.5rem; /* Default value */
-}
-
 .math-plugin .math-modal-overlay {
   position: fixed;
   top: 0;
@@ -35,7 +31,7 @@
 .math-modal-overlay .math-close-btn {
   width: 40px;
   height: 40px;
-  background-color: #6c757d;
+  background-color: var(--math-plugin-theme);
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -65,7 +61,7 @@
 
 /* Hover Effect */
 .math-modal-overlay .math-close-btn:hover {
-  background-color: #5a6268;
+  background-color: var(--math-plugin-theme);
 }
 
 .math-plugin .math-modal-header {
@@ -104,12 +100,14 @@
   background-color: #fff;
   background-clip: padding-box;
   border-radius: 8px;
-  border: 1px solid #000000;
+  border: 1px solid var(--math-plugin-theme);
+  font-family: 'KaTeX_Math', serif;;
+  font-style: italic;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
 .math-plugin .form-control::placeholder {
-  color: #6c757d;
+  color: var(--math-plugin-theme);
   opacity: 1;
 }
 
@@ -129,6 +127,9 @@
   margin-top: 0.5em;
 }
 
+.math-plugin .form-check-input[type="checkbox"] {
+  accent-color: var(--math-plugin-theme) !important;
+}
 .math-plugin .form-check > * {
   cursor: pointer;
 }

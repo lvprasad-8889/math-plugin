@@ -26,9 +26,6 @@ const Modal = ({ isOpen, onClose, keyboardVisible, children }) => {
     };
   }, [isOpen]);
 
-  useEffect(() => {
-    document.documentElement.style.setProperty("--font-size", variables.fontSize);
-  }, []);
 
   if (!isOpen) return null;
 

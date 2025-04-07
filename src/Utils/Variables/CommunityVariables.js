@@ -38,7 +38,6 @@ isInsideJmp();
 // variables for necessaru info
 const prod = !/^http:\/\/localhost:\d{4}$/.test(origin);
 
-
 const classList = document.body.classList;
 
 const pageClass = Array.from(classList).find((className) =>
@@ -53,7 +52,7 @@ const page = {
   editPage: pageClass === "EditPage",
   BlogPage: pageClass && pageClass.startsWith("Blog"),
   TkbPage: pageClass && pageClass.startsWith("Tkb"),
-  blogArticlePage: pageClass === "BlogArticlePage"
+  blogArticlePage: pageClass === "BlogArticlePage",
 };
 
 let tkbPageException =
@@ -126,6 +125,8 @@ let communityCdn = {
 
 const fontSize = prod ? "1.5rem" : "1rem";
 
+const theme = "#6c757d";
+
 let variables = {
   community,
   communityIndex,
@@ -137,7 +138,8 @@ let variables = {
   prod,
   tkbPageException,
   communityCdn,
-  fontSize
+  fontSize,
+  theme,
 };
 
 export default variables;

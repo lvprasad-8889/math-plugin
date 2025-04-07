@@ -6,7 +6,6 @@ body {
   --keyboard-zindex: 99999;
 }
 
-
 .math-plugin-btn {
   pointer-events: none;
   opacity: 0;
@@ -20,7 +19,7 @@ body {
 .math-plugin-preview {
   margin-top: 10px;
   overflow: auto;
-  max-height: 3 0vh;
+  max-height: 30vh;
 }
 
 .math-plugin-latex {
@@ -40,8 +39,8 @@ body {
   cursor: pointer;
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
   color: #fff;
-  background-color: #6c757d; /* Bootstrap secondary gray */
-  border-color: #6c757d;
+  background-color: var(--math-plugin-theme); /* Bootstrap secondary gray */
+  border-color: var(--math-plugin-theme);
 }
 
 .disable-math-save-btn {
@@ -67,8 +66,12 @@ body {
 }
 
 math-field {
-  border: solid 1px #000000 !important;
+  border: solid 1px var(--math-plugin-theme) !important;
   border-radius: 8px;
+}
+
+math-field:focus-within {
+  outline: 1.75px solid var(--math-plugin-theme) !important;
 }
 
 .math-plugin .math-equation {
@@ -82,6 +85,10 @@ math-field {
 .math-plugin-dummy {
   border: solid;
   width: 100%;
+}
+
+span.math-equation {
+  display: inline !important;
 }
 
 .math-equation-selected {
@@ -100,5 +107,22 @@ math-field {
 }
 
 #mathlive-suggestion-popover {
-  z-index: 99999 !important;
+  z-index: 999999 !important;
+  height: 40vh !important;
+}
+
+.after-math-field {
+  display: flex;
+  justify-content: space-between;
+}
+
+.math-plugin-latex-arrow {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.math-plugin-latex-arrow.rotated {
+  transform: rotate(180deg);
 }
