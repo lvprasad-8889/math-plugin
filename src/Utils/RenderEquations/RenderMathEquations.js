@@ -14,6 +14,7 @@ const getDisplayandLatex = (oldLatex) => {
     latex = oldLatex.slice(1, -1);
   } else {
     displayMode = true;
+    latex = oldLatex;
   }
   return {
     displayMode,

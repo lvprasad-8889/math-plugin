@@ -1,0 +1,8 @@
+:root {
+  --math-plugin-font-size: 1.5rem;
+  --math-plugin-theme: #6c757d;
+}
+
+body {
+  --keyboard-zindex: 99999;
+}

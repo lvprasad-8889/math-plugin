@@ -6,7 +6,6 @@ import variables from "../Variables/CommunityVariables";
 
 import plugins from "../MathPlugin/MathPlugin";
 import convertLatexToMath from "../RenderEquations/RenderMathEquations";
-import mathUtils from "../MathUtils";
 
 let mutationsAdded = [];
 

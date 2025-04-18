@@ -25,6 +25,7 @@ function App() {
     setUpdateTinyMceBody,
     setShowLatex,
     showLatex,
+    setContextMenu
   } = useStore();
 
   const mathFieldRef = useRef(null);
@@ -36,6 +37,7 @@ function App() {
 
   const [latex, setLatex] = useState("");
   const [inline, setInline] = useState(false);
+
 
   const addExpression = () => {
     if (!mathUtils.isValidKaTeXEquation(latex) || !latex.trim()) {
@@ -107,6 +109,7 @@ function App() {
 
   const handleInput = (evt) => {
     let val = evt.target.value.trim();
+
     const replacedVal = val.replace(/\\~/g, "\\sim");
 
     setLatex((prevLatex) => {
@@ -164,8 +167,8 @@ function App() {
 
   useEffect(() => {
     if (isModalOpen) {
-      focusMathField();
-      mathUtils.setStylesForMathField();
+      // focusMathField();
+      // mathUtils.setStylesForMathField();
     }
   }, [isModalOpen]);
 
@@ -217,14 +220,14 @@ function App() {
   }, [updateTinyMceBody]);
 
   useEffect(() => {
-    document.documentElement.style.setProperty(
-      "--math-plugin-font-size",
-      variables.fontSize
-    );
-    document.documentElement.style.setProperty(
-      "--math-plugin-theme",
-      variables.theme
-    );
+    // document.documentElement.style.setProperty(
+    //   "--math-plugin-font-size",
+    //   variables.fontSize
+    // );
+    // document.documentElement.style.setProperty(
+    //   "--math-plugin-theme",
+    //   variables.theme
+    // );
   }, []);
 
   return (

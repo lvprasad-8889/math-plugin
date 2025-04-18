@@ -61,16 +61,36 @@
         1: ".lia-component-reply-list > :first-child",
       };
 
+      const getDisplayandLatex = (oldLatex) => {
+        if (!oldLatex) return;
+        let displayMode;
+        let latex;
+        if (oldLatex.startsWith("$$") && oldLatex.endsWith("$$")) {
+          displayMode = true;
+          latex = oldLatex.slice(2, -2);
+        } else if (oldLatex.startsWith("$") && oldLatex.endsWith("$")) {
+          displayMode = false;
+          latex = oldLatex.slice(1, -1);
+        } else {
+          displayMode = true;
+          latex = oldLatex;
+        }
+        return {
+          displayMode,
+          latex,
+        };
+      };
+
       const convertLatexToMath = () => {
         let mathEquations = document.querySelectorAll(".math-equation");
         if (mathEquations) {
           mathEquations.forEach((equation) => {
-            let latex = equation.getAttribute("data-katex");
-
+            let oldLatex = equation.getAttribute("data-katex");
+            let { latex, displayMode } = getDisplayandLatex(oldLatex);
             if (latex) {
               equation.innerHTML = katex.renderToString(latex, {
                 throwOnError: false,
-                displayMode: true,
+                displayMode,
               });
             }
           });

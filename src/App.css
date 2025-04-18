@@ -2,9 +2,6 @@
   box-sizing: border-box;
 }
 
-body {
-  --keyboard-zindex: 99999;
-}
 
 .math-plugin-btn {
   pointer-events: none;
@@ -68,7 +65,8 @@ body {
 math-field {
   border: solid 1px var(--math-plugin-theme) !important;
   border-radius: 8px;
-}
+  --caret-color: var(--math-plugin-theme);
+} 
 
 math-field:focus-within {
   outline: 1.75px solid var(--math-plugin-theme) !important;
