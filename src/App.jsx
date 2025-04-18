@@ -167,8 +167,8 @@ function App() {
 
   useEffect(() => {
     if (isModalOpen) {
-      // focusMathField();
-      // mathUtils.setStylesForMathField();
+      focusMathField();
+      mathUtils.setStylesForMathField();
     }
   }, [isModalOpen]);
 
@@ -220,14 +220,14 @@ function App() {
   }, [updateTinyMceBody]);
 
   useEffect(() => {
-    // document.documentElement.style.setProperty(
-    //   "--math-plugin-font-size",
-    //   variables.fontSize
-    // );
-    // document.documentElement.style.setProperty(
-    //   "--math-plugin-theme",
-    //   variables.theme
-    // );
+    document.documentElement.style.setProperty(
+      "--math-plugin-font-size",
+      variables.fontSize
+    );
+    document.documentElement.style.setProperty(
+      "--math-plugin-theme",
+      variables.theme
+    );
   }, []);
 
   return (

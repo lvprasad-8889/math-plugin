@@ -402,7 +402,7 @@ const convertSpantoP = (element) => {
 
 const setStylesForMathField = () => {
   const mathfield = document.querySelector("math-field");
-  const shadowRoot = mathfield && mathfield.shadowRoot;
+  const shadowRoot = mathfield.shadowRoot;
   if (!shadowRoot) return;
 
   const toggleButton = shadowRoot.querySelector(".ML__virtual-keyboard-toggle");
