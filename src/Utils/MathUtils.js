@@ -242,7 +242,7 @@ const addShadowRootToTheDom = async (
   content.className = "math-content";
 
   if (!displayMode) {
-    element.style.padding = "2px 2px";
+    element.style.padding = "0px 0px";
     element.style.margin = "0px 2px";
     element.style.minWidth = "";
   }
@@ -402,7 +402,7 @@ const convertSpantoP = (element) => {
 
 const setStylesForMathField = () => {
   const mathfield = document.querySelector("math-field");
-  const shadowRoot = mathfield.shadowRoot;
+  const shadowRoot = mathfield && mathfield.shadowRoot;
   if (!shadowRoot) return;
 
   const toggleButton = shadowRoot.querySelector(".ML__virtual-keyboard-toggle");

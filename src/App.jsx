@@ -25,7 +25,7 @@ function App() {
     setUpdateTinyMceBody,
     setShowLatex,
     showLatex,
-    setContextMenu
+    setContextMenu,
   } = useStore();
 
   const mathFieldRef = useRef(null);
@@ -37,7 +37,6 @@ function App() {
 
   const [latex, setLatex] = useState("");
   const [inline, setInline] = useState(false);
-
 
   const addExpression = () => {
     if (!mathUtils.isValidKaTeXEquation(latex) || !latex.trim()) {
@@ -168,7 +167,7 @@ function App() {
   useEffect(() => {
     if (isModalOpen) {
       focusMathField();
-      mathUtils.setStylesForMathField();
+      mathFieldRef.current && mathUtils.setStylesForMathField();
     }
   }, [isModalOpen]);
 
@@ -213,7 +212,7 @@ function App() {
   useEffect(() => {
     if (updateTinyMceBody) {
       tinymce.activeEditor.setContent(tinymce.activeEditor.getContent(), {
-        format: "html",
+        format: variables.page.editPage ? "raw" : "html",
       });
       setUpdateTinyMceBody(false);
     }
@@ -247,6 +246,7 @@ function App() {
         {() => (
           <>
             <math-field
+              id="math-field"
               ref={mathFieldRef}
               onInput={(event) => handleInput(event)}
               style={{ width: "100%" }}

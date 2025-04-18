@@ -6,7 +6,6 @@ let countOfMathEquations = 0;
 function handleMutation(mutationsList, observer) {
   for (let mutation of mutationsList) {
     if (mutation.type === "attributes" || mutation.type === "childList") {
-      console.log("Hello sir, I am here...");
       convertLatexToMath();
     }
   }
@@ -24,9 +23,7 @@ const mutationForLanguageTranslator = () => {
 
   const elements = document.querySelector(selector);
 
-  console.log("selector is", selector);
 
-  console.log(elements);
   const observerConfig = {
     attributes: true,
     childList: true,
