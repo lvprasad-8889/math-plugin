@@ -35,7 +35,7 @@ const mainFunction = () => {
         forumTopicMutations.mutationForPreview();
         // another internal math plugin to be added after toolbar expanded
         plugins.threeDotsInRichEditor();
-      }, 0);
+      }, variables.communityIndex === 1 ? 0 : 500);
     }
   }
 };

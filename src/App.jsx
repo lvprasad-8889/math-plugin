@@ -103,6 +103,7 @@ function App() {
   const focusMathField = () => {
     if (mathFieldRef.current) {
       mathFieldRef.current.focus();
+      mathFieldRef.current.position = latex.length;
     }
   };
 
@@ -212,7 +213,7 @@ function App() {
   useEffect(() => {
     if (updateTinyMceBody) {
       tinymce.activeEditor.setContent(tinymce.activeEditor.getContent(), {
-        format: variables.page.editPage ? "raw" : "html",
+        format: variables.page.editPage ? "html" : "html",
       });
       setUpdateTinyMceBody(false);
     }

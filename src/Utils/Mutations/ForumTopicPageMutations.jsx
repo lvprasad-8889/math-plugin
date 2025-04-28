@@ -86,7 +86,7 @@ const mutationForDynamicMessages = () => {
 };
 
 const mutationForEditMessageInJmp = (replies) => {
-  if (variables.communityIndex === 1) {
+  if (variables.communityIndex <= 1) {
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         mutation.target.childNodes.forEach((child) => {
@@ -97,7 +97,7 @@ const mutationForEditMessageInJmp = (replies) => {
               } catch (err) {
                 startMutationProcess(child);
               }
-            }, 500);
+            }, 1000);
           }
         });
       });

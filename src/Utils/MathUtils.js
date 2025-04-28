@@ -158,10 +158,15 @@ const addElementAtCursorToTinyMCE = (element) => {
 
     editor.selection.setContent(contentToInsert, { format: "raw" });
 
+    if (variables.communityIndex == 0) {
+      globalState.setUpdateTinyMceBody(true);
+    }
+
     if (!displayMode) {
       const brNode = document.createElement("br");
       editor.selection.getNode().after(brNode);
     }
+
   });
 
   const lastNode = editor.selection.getNode();
