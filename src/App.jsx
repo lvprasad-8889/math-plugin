@@ -210,6 +210,7 @@ function App() {
     }
   }, [invokeMathPopUp]);
 
+  // to ensure that images are rendered in tinymce
   useEffect(() => {
     if (updateTinyMceBody) {
       tinymce.activeEditor.setContent(tinymce.activeEditor.getContent(), {
@@ -219,6 +220,7 @@ function App() {
     }
   }, [updateTinyMceBody]);
 
+  // global theme and font size
   useEffect(() => {
     document.documentElement.style.setProperty(
       "--math-plugin-font-size",

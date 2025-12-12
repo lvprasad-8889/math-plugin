@@ -6,6 +6,9 @@ let countOfMathEquations = 0;
 function handleMutation(mutationsList, observer) {
   for (let mutation of mutationsList) {
     if (mutation.type === "attributes" || mutation.type === "childList") {
+      console.log(
+        "Calling convertLatexToMath from language translator mutation"
+      );
       convertLatexToMath();
     }
   }
@@ -14,26 +17,42 @@ function handleMutation(mutationsList, observer) {
 const mutationForLanguageTranslator = () => {
   let selector;
   if (variables.page.forumTopicPage) {
-    selector = ".message-subject > .lia-message-subject";
-  } else if (variables.page.BlogPage) {
+    selector = ".lia-message-subject";
+  } else if (variables.page.tkbArticlePage) {
     selector = ".lia-tkb-article-subject";
   } else {
     selector = ".lia-blog-article-page-article-subject";
   }
-
-  const elements = document.querySelector(selector);
-
-
   const observerConfig = {
     attributes: true,
     childList: true,
+    // subtree: variables.page.forumTopicPage, // Changed to true to observe child elements  const observerConfig = {
+    attributes: true,
+    childList: true,
+    attributeOldValue: true, // Get old attribute values
+    characterData: true, // Observe text content changes
+    characterDataOldValue: true, // Get old text content
   };
 
-  elements &&
-    elements.forEach((element) => {
+  if (variables.page.forumTopicPage) {
+    const elements = document.querySelectorAll(selector);
+
+    if (elements.length > 0) {
+      elements.forEach((element) => {
+        const observer = new MutationObserver(handleMutation);
+        observer.observe(element, observerConfig);
+      });
+    } else {
+      // console.log("No elements found for selector:", selector);
+    }
+  } else {
+    const element = document.querySelector(selector);
+    console.log("element", element);
+    if (element) {
       const observer = new MutationObserver(handleMutation);
       observer.observe(element, observerConfig);
-    });
+    }
+  }
 };
 
 const mutationForDynamicMessages = () => {
@@ -102,7 +121,7 @@ const startProcessOfRenderingMathEquations = () => {
   if (variables.page.blogArticlePage) {
     reRenderMathEquationForConfirmation();
   }
-  // mutationForLanguageTranslator();
+  mutationForLanguageTranslator();
   mutationForDynamicMessages();
   if (variables.communityIndex <= 0) {
     // for community page, forum topic page in italent2.demo.lithium.com

@@ -9,6 +9,13 @@ import startProcessOfRenderingMathEquations from "../Mutations/JustRenderMathEqu
 const mainFunction = () => {
   startProcessOfRenderingMathEquations();
   variables.isMathPluginUser();
+  // only for custom ModifyTranslation_preview page
+  if (document.body.classList.contains("ModifyTranslation_preview")) {
+    let interval = setInterval(() => {
+      convertLatexToMath();
+    }, 1500);
+    setTimeout(() => clearInterval(interval), 6000); // 5 seconds
+  }
   if (!variables.prod) {
     plugins.internalMathPlugin();
     plugins.externalMathPlugin();

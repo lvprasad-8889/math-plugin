@@ -34,6 +34,7 @@ const convertLatexToMath = (richDoc = undefined) => {
     richDoc && isHTMLElement(richDoc)
       ? richDoc.querySelectorAll(".math-equation")
       : document.querySelectorAll(".math-equation");
+
   if (mathEquations) {
     mathEquations.forEach((equation) => {
       let oldLatex = equation.getAttribute("data-katex");

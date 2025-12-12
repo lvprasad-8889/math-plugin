@@ -7,13 +7,13 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        entryFileNames: "assets/mathplugin.[hash].js",
-        chunkFileNames: "assets/mathplugin.[hash].js",
+        entryFileNames: "assets/mathplugin537.js",
+        chunkFileNames: "assets/mathplugin537.js",
         assetFileNames: (assetInfo) => {
           if (assetInfo.name.endsWith(".css")) {
-            return "assets/mathplugin.[hash].css";
+            return "assets/mathplugin537.css";
           }
-          return "assets/mathplugin.[hash].[ext]";
+          return "assets/mathplugin537.[ext]";
         },
       },
     },
